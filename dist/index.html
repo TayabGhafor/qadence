@@ -59,6 +59,7 @@
   .challenge-card{min-width:0;padding:20px;min-height:220px}
   .challenge-card .button{width:max-content;max-width:100%}
   .workspace-title{align-items:flex-end;gap:18px;margin-bottom:20px}
+  .workspace-title .eyebrow{color:#287450}
   .workspace-title>div:first-child{min-width:0}
   .workspace-title h2{font-size:clamp(21px,2.5vw,29px);line-height:1.2;overflow-wrap:anywhere}
   .workspace-title p{max-width:650px}
@@ -314,7 +315,7 @@ const AUTH_KEY='sqaPracticeRoom.auth.v1';
 const DEMO_USERNAME='Admin',DEMO_PASSWORD='admin@123';
 const marketingView=document.getElementById('marketing'),loginView=document.getElementById('loginView'),appShell=document.getElementById('appShell');
 function openLogin(){marketingView.hidden=true;loginView.hidden=false;appShell.hidden=true;document.getElementById('authError').hidden=true;document.getElementById('authUsername').focus()}
-function openApp(){marketingView.hidden=true;loginView.hidden=true;appShell.hidden=false;document.getElementById('accountName').textContent=DEMO_USERNAME;renderHome();if(session){renderPractice();showScreen('practice')}else showScreen('home')}
+function openApp(){marketingView.hidden=true;loginView.hidden=true;appShell.hidden=false;document.getElementById('accountName').textContent=DEMO_USERNAME;if(!document.getElementById('targetAppView').childElementCount)beginChallenge(activeChallenge.id);renderHome();if(session){renderPractice();showScreen('practice')}else showScreen('home')}
 function openLanding(){marketingView.hidden=false;loginView.hidden=true;appShell.hidden=true;window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-open-login]').forEach(button=>button.addEventListener('click',openLogin));
 document.getElementById('backToLanding').addEventListener('click',event=>{event.preventDefault();openLanding()});
