@@ -25,7 +25,7 @@ Deliver a polished, open-access frontend for the SQA practice hub. All training 
 - Each browser profile has its own progress and submissions. Clearing site data resets them; they do not sync across devices.
 - Build simulated first-party practice apps inspired by the kinds of exercises in the provided references. Do not redirect learners to those references for core practice.
 - Code can be drafted, saved, submitted, exported, and reviewed in this frontend. It is not executed by a backend in this phase.
-- Maintain the existing Site ID. Site access is currently owner-only; the user requested an open-source/open-use site, so confirm current access details and make it public as part of publication if the Sites workflow permits.
+- Maintain the existing Site ID. The user requested open use; access was changed to public for the published demo. The project includes an MIT license.
 
 ## Progress log
 
