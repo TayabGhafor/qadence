@@ -15,7 +15,8 @@ Deliver a polished, open-access frontend for the SQA practice hub. All training 
 | 5. Built-in practice apps | PeopleOps, ShopFlow, UI Playground, API Sandbox, Mobile Lab, Bug Hunt | Implemented | Six first-party simulated environments with in-site interactions; no external target links |
 | 6. Challenges and practice workspace | Difficulty/framework filters, detailed briefs, editable code/approach/test cases, hidden hints | Implemented | Six filtered scenarios; Playwright, Cypress, Selenium, Postman, and manual templates; embedded target, approach/test tabs, hidden hint/model approach |
 | 7. Submission and revision | Rubric scoring, feedback, saved attempts, weak-topic retry, history | Implemented | Browser-local submissions include source, approach, test cases, score breakdown, export, and retry; code is not run by the Site |
-| 8. QA and publish | Check routes, responsive layout, storage persistence, logout, external-link absence; publish existing Site | In progress | HTML parse, JavaScript syntax, unique static IDs, required screens/credentials, localStorage wiring, and no external practice links pass; public publication pending |
+| 8. QA and publish | Check routes, responsive layout, storage persistence, logout, external-link absence; publish existing Site | Complete | Static checks pass; existing Site is public and active at its existing URL |
+| 9. Backend integration | Replace demo gate and local-only persistence with a real backend when ready | Not started | Intentionally deferred to the next phase |
 
 ## Scope notes
 
@@ -37,3 +38,5 @@ Deliver a polished, open-access frontend for the SQA practice hub. All training 
 - 2026-11-09 — Feature 6 complete: six filtered scenarios open an embedded practice target, editable framework starter, approach and test case fields, and request-only hints/model guidance.
 - 2026-11-09 — Feature 7 complete: submissions use a transparent heuristic rubric, persist locally, appear in history, export, and add low-score challenges to the revision queue. Execution is not claimed.
 - 2026-11-09 — QA checkpoint: HTML parser and JavaScript syntax checks pass; seven expected app screens exist; static IDs are unique; login credentials and local storage are present; app markup contains no outbound practice URLs; Site ID is unchanged.
+- 2026-11-09 — Published the existing Site. Access mode changed from owner-only custom to public as requested for open use. Live URL: `https://sqa-interview-practice-hub.maytrix-inc.chatgpt.site`.
+- 2026-11-09 — Remaining verification limit: no interactive browser pass was completed in this environment; automated/static checks and the Sites deployment result are recorded above.
