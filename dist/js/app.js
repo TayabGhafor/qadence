@@ -433,10 +433,14 @@ ${resume}
   QA_I18N.setDocLang();
   QA_I18N.apply();
   applyTheme(Prefs.get().theme);
-  renderLandingLevels();
+  /* In English the curriculum and counters are already in index.html (pre-rendered by tools/build-seo.js from this
+     same function, kept in sync by its --check), so boot skips the identical re-render. */
+  if (QA_I18N.lang !== 'en' || !document.querySelector('#landingLevels .l-level')) renderLandingLevels();
   if (location.protocol !== 'file:') document.querySelectorAll('a[href="#top"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: motionOK() ? 'smooth' : 'auto' }); }));
   let signedIn = false;
   try { const auth = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); signedIn = auth && auth.username === DEMO_USERNAME; } catch {}
-  if (signedIn) openApp(); else openLanding();
+  if (signedIn) openApp(); else if (window.QA_PENDING === 'login') openLogin(); else openLanding();
+  window.QA_PENDING = null;
+  document.documentElement.removeAttribute('data-boot');
   window.QadenceApp = { computeStats, refreshChrome, renderDashboard, version: SCHEMA_VERSION };
 })();

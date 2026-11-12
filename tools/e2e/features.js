@@ -6,6 +6,10 @@ const base = process.argv[2] || 'http://127.0.0.1:8765/';
 const results = [];
 const ok = (name, pass, info = '') => { results.push({ name, pass }); console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}${info ? '  — ' + info : ''}`); };
 const st = page => page.evaluate(() => JSON.parse(localStorage.getItem('sqaPracticeRoom.v1') || '{}'));
+// The app scripts load right after first paint, so the load event can fire before the app has booted:
+// wait for js/app.js to finish (it sets window.QadenceApp). Older builds without it just wait out the timeout.
+const booted = page => page.waitForFunction(() => !!window.QadenceApp, null, { timeout: 10000 }).catch(() => {});
+
 async function go(page, hash) { await page.evaluate(h => { location.hash = h; }, hash); await page.waitForTimeout(350); }
 async function overflow(page) {
   return page.evaluate(() => {
@@ -33,7 +37,7 @@ async function overflow(page) {
   page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
   page.on('dialog', d => { errors.push('native dialog: ' + d.message()); d.dismiss(); });
 
-  await page.goto(base); await page.evaluate(() => localStorage.clear()); await page.reload();
+  await page.goto(base); await booted(page); await page.evaluate(() => localStorage.clear()); await page.reload(); await booted(page);
   await page.click('[data-open-login]'); await page.click('#authForm [type=submit]'); await page.waitForTimeout(400);
 
   // onboarding
@@ -74,7 +78,7 @@ async function overflow(page) {
   s = await st(page); ok('lesson completion saved', !!s.academy.completed['mt-boundary']);
   const xp = Number(await page.textContent('#xpChip b'));
   ok('XP increases after completion', xp >= 50, `${xp} XP`);
-  await page.reload(); await page.waitForTimeout(500);
+  await page.reload(); await booted(page); await page.waitForTimeout(500);
   ok('notes persist across reload and render as text', (await page.inputValue('#lessonNotes')).includes('<script>') && !(await page.$('#lessonNotes ~ script')));
   ok('deep link restores the lesson after reload', /Boundary value analysis/.test(await page.textContent('#lessonTitle')));
 
@@ -132,11 +136,11 @@ async function overflow(page) {
 
   // second profile: switch and back
   await page.fill('#newProfileName', 'Ali'); await page.click('#addProfileForm [type=submit]'); await page.waitForTimeout(200);
-  await Promise.all([page.waitForNavigation(), page.click('#appDialogActions [data-dlg="1"]')]); await page.waitForTimeout(600);
+  await Promise.all([page.waitForNavigation(), page.click('#appDialogActions [data-dlg="1"]')]); await booted(page); await page.waitForTimeout(600);
   const fresh = await page.evaluate(() => ({ completed: Object.keys(state.academy.completed).length, key: KEY }));
   ok('new profile starts fresh under its own key', fresh.completed === 0 && fresh.key !== 'sqaPracticeRoom.v1', fresh.key);
   await go(page, '#/profile');
-  await Promise.all([page.waitForNavigation(), page.click('[data-switch-profile="default"]')]); await page.waitForTimeout(600);
+  await Promise.all([page.waitForNavigation(), page.click('[data-switch-profile="default"]')]); await booted(page); await page.waitForTimeout(600);
   s = await st(page); ok('switching back keeps original progress', !!s.academy.completed['mt-boundary'] && s.profile.name === 'Sara Ahmed');
 
   // RTL + overflow

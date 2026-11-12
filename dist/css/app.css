@@ -430,6 +430,39 @@ dialog.app-dialog[open] { animation: dlgIn var(--d3) var(--ease-spring); }
 .l-final .l-cta { justify-content: flex-end; margin: 0; position: relative; z-index: 1; }
 .l-footer { padding: 48px 0 40px; color: var(--muted); font-size: 13.5px; }
 .l-footer .l-container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; border-block-start: 1px solid var(--line); padding-block-start: 28px; }
+/* landing · pages.css and legacy.css load after first paint, so the two in-app rules the landing relied on live here too */
+.lvl-tile-beginner { background: var(--success-soft); color: var(--success-ink); }
+.lvl-tile-intermediate { background: var(--info-soft); color: var(--info-ink); }
+.lvl-tile-advanced { background: var(--violet-soft); color: var(--violet); }
+.l-hero .pill { height: auto; }   /* legacy.css's generic .pill sets height: 24px */
+/* landing · FAQ (English-only section, same look as the in-app .acc accordion) */
+#faq { font-family: var(--font-sans); line-height: 1.6; }
+.l-faq-wrap { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 40px; align-items: start; }
+.l-faq-wrap .l-head { margin: 0; position: sticky; top: 96px; }
+.l-faq { display: grid; gap: 12px; }
+.l-faq-item { border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface); overflow: hidden; transition: border-color var(--d2) var(--ease), box-shadow var(--d2) var(--ease); }
+.l-faq-item[open] { border-color: var(--line-2); box-shadow: var(--shadow-sm); }
+.l-faq-item summary { list-style: none; cursor: pointer; padding: 18px 20px; display: flex; gap: 14px; align-items: center; border-radius: inherit; }
+.l-faq-item summary::-webkit-details-marker { display: none; }
+.l-faq-item summary h3 { font-size: 16px; line-height: 1.4; letter-spacing: -.01em; font-weight: 700; }
+.l-faq-item summary:hover h3 { color: var(--brand); }
+.l-faq-item summary .ic { margin-inline-start: auto; color: var(--muted); transition: transform var(--d2) var(--ease); }
+.l-faq-item[open] summary .ic { transform: rotate(180deg); }
+.l-faq-item summary:focus-visible { outline-offset: -3px; }
+.l-faq-a { padding: 0 20px 20px; }
+.l-faq-a p { color: var(--text-2); font-size: 15px; line-height: 1.7; max-width: 68ch; }
+.l-noscript { margin: 0; padding: 12px 16px; background: #FEF3C7; color: #713F12; text-align: center; font-size: 14px; font-weight: 600; }
+@media (max-width: 1023px) {
+  .l-faq-wrap { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .l-faq-wrap .l-head { position: static; margin-block-end: 28px; }
+}
+@media (max-width: 720px) {
+  .l-faq-item summary { padding: 16px; }
+  .l-faq-item summary h3 { font-size: 15px; }
+  .l-faq-a { padding: 0 16px 16px; }
+}
+/* boot · set by the inline script in index.html's <head> on a signed-in reload; js/app.js removes it after opening the app */
+html[data-boot] #marketing { visibility: hidden; }
 
 /* ───────────── auth ───────────── */
 .auth { min-height: 100dvh; display: grid; grid-template-columns: 1.05fr 1fr; background: var(--bg); }

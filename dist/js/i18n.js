@@ -38,7 +38,8 @@ window.QA_I18N = (function () {
       const k = el.getAttribute('data-i18n');
       if (!el.hasAttribute('data-i18n-en')) el.setAttribute('data-i18n-en', el.textContent);
       if (!dict.en[k]) dict.en[k] = el.getAttribute('data-i18n-en');
-      el.textContent = t(k);
+      const v = t(k);
+      if (el.textContent !== v) el.textContent = v;   // unchanged text keeps its node: no repaint (and no late LCP) on boot
     });
     r.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if (!dict.en[k]) dict.en[k] = el.getAttribute('placeholder') || ''; el.setAttribute('placeholder', t(k)); });
     r.querySelectorAll('[data-i18n-aria]').forEach(el => { const k = el.getAttribute('data-i18n-aria'); if (!dict.en[k]) dict.en[k] = el.getAttribute('aria-label') || ''; el.setAttribute('aria-label', t(k)); });

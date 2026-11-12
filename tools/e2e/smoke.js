@@ -5,6 +5,10 @@ const base = process.argv[2] || 'http://127.0.0.1:8765/';
 const results = [];
 const ok = (name, pass, info = '') => { results.push({ name, pass, info }); console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}${info ? '  — ' + info : ''}`); };
 
+// The app scripts load right after first paint, so the load event can fire before the app has booted:
+// wait for js/app.js to finish (it sets window.QadenceApp). Older builds without it just wait out the timeout.
+const booted = page => page.waitForFunction(() => !!window.QadenceApp, null, { timeout: 10000 }).catch(() => {});
+
 async function go(page, screen) {
   // click the first visible nav control for a screen (old: .nav button, new: sidebar link)
   const clicked = await page.evaluate(s => {
@@ -24,9 +28,9 @@ async function go(page, screen) {
   page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
   page.on('dialog', d => { errors.push('native dialog: ' + d.message()); d.dismiss(); });
 
-  await page.goto(base);
+  await page.goto(base); await booted(page);
   await page.evaluate(() => localStorage.clear());
-  await page.reload();
+  await page.reload(); await booted(page);
 
   // 1. login
   const openLogin = await page.$('[data-open-login]');
@@ -41,7 +45,7 @@ async function go(page, screen) {
   ok('no password in localStorage', !auth.includes('admin@123'));
 
   // 2. reload keeps session
-  await page.reload(); await page.waitForTimeout(400);
+  await page.reload(); await booted(page); await page.waitForTimeout(400);
   ok('reload keeps sign-in', await page.evaluate(() => !document.getElementById('appShell').hidden));
 
   // 3. challenge → submit → submissions

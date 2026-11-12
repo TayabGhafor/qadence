@@ -1,0 +1,54 @@
+<!doctype html>
+<!-- Qadence · Open Graph / social card template (1200×630). Rendered to dist/assets/og-image.png by
+     `node tools/render-images.js`, which passes the live content totals in the URL hash
+     (#lessons=80&mcqs=630&interview=221&langs=11). Open it directly to preview with the defaults below. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Qadence social card</title>
+<style>
+  @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 400 800; src: url(../dist/assets/fonts/plus-jakarta-sans-latin.woff2) format('woff2'); }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #EAF6F3; background: #08120F; position: relative; isolation: isolate; -webkit-font-smoothing: antialiased; }
+  body::before { content: ""; position: absolute; inset: 0; z-index: -2;
+    background: radial-gradient(620px 420px at 86% 18%, rgba(20,184,166,.42), transparent 66%), radial-gradient(560px 380px at 6% 104%, rgba(245,158,11,.20), transparent 66%), radial-gradient(520px 300px at 52% -10%, rgba(94,234,212,.14), transparent 70%), linear-gradient(140deg, #0B1A18 0%, #08120F 55%, #0C2522 100%); }
+  body::after { content: ""; position: absolute; inset: 0; z-index: -1;
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 70% at 60% 40%, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse 75% 70% at 60% 40%, #000 30%, transparent 78%); }
+  .wrap { position: absolute; inset: 64px 72px 56px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 18px; font-weight: 800; font-size: 40px; letter-spacing: -.045em; color: #fff; }
+  .brand svg { width: 64px; height: 64px; border-radius: 19px; box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 18px 40px -16px rgba(0,0,0,.8); }
+  .tag { margin-inline-start: auto; font-size: 20px; font-weight: 700; letter-spacing: 0; padding: 9px 18px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: #CFEDE7; }
+  .tag b { color: #04221E; background: linear-gradient(135deg, #2DD4BF, #5EEAD4); padding: 3px 10px; border-radius: 999px; margin-inline-end: 8px; font-size: 16px; letter-spacing: .04em; }
+  h1 { margin-top: 34px; font-size: 76px; line-height: 1.02; letter-spacing: -.05em; font-weight: 800; max-width: 900px; }
+  h1 span { background: linear-gradient(100deg, #5EEAD4 0%, #2DD4BF 45%, #FCD34D 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { margin-top: 18px; font-size: 26px; line-height: 1.4; color: #B5CEC9; font-weight: 500; max-width: 880px; }
+  .stats { margin-top: auto; display: flex; gap: 14px; }
+  .stat { flex: 1; padding: 18px 20px 16px; border-radius: 22px; background: rgba(16,30,28,.78); border: 1px solid rgba(255,255,255,.1); }
+  .stat b { display: block; font-size: 46px; line-height: 1; letter-spacing: -.05em; font-weight: 800; color: #fff; }
+  .stat span { display: block; margin-top: 8px; font-size: 19px; white-space: nowrap; font-weight: 600; color: #9DB8B2; }
+  .stat:first-child b { color: #5EEAD4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16332F"/><stop offset="1" stop-color="#0A1514"/></linearGradient></defs><rect width="48" height="48" rx="14" fill="url(#t)"/><g transform="translate(-1.5 1.5)" fill="none" stroke-linecap="round" stroke-width="4.4"><path d="M30.5 32.6A11.5 11.5 0 1 1 35.3 22.4" stroke="#fff"/><path d="M24 27.5l4.6 4.6 10.4-10.4" stroke="#2DD4BF" stroke-linejoin="round"/></g></svg>
+    qadence
+    <span class="tag"><b>FREE</b>Open source</span>
+  </div>
+  <h1>Learn software testing,<br><span>step by step.</span></h1>
+  <p class="sub">A beginner → advanced QA course with interview prep, simple explanations in your language, and nothing to install.</p>
+  <div class="stats">
+    <div class="stat"><b data-stat="lessons">80</b><span>lessons in 8 stages</span></div>
+    <div class="stat"><b data-stat="mcqs">630</b><span>MCQs, all explained</span></div>
+    <div class="stat"><b data-stat="interview">221</b><span>interview questions</span></div>
+    <div class="stat"><b data-stat="langs">11</b><span>explanation languages</span></div>
+  </div>
+</div>
+<script>
+  new URLSearchParams(location.hash.slice(1)).forEach(function (v, k) { var el = document.querySelector('[data-stat="' + k + '"]'); if (el && /^\d+$/.test(v)) el.textContent = v; });
+</script>
+</body>
+</html>

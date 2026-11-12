@@ -1,0 +1,159 @@
+# Qadence
+
+> Qadence is a free, open-source, browser-only course for learning software testing and quality assurance (QA) step by step: 80 lessons in 8 stages mapped to the ISTQB CTFL v4.0.1 syllabus, 630 MCQs, 12 scenario tests, 41 practice drills and 221 interview questions, with a simple explanation of every lesson in 11 languages.
+
+Qadence is for people starting a QA career and for junior QA Engineers and QA Analysts (about 1–2 years) preparing for interviews, with advanced material for growth. The site is a static single page: the landing page at https://tayabghafor.github.io/qadence/ is public; the app itself runs in the browser behind a shared demo login that is shown on the sign-in screen (a navigation gate, not an account). There are no separate lesson URLs — screens use client-side "#/..." routes.
+
+Key facts:
+
+- Free and open source (MIT License). No sign-up, no payments, no ads, no analytics and no external requests — fonts are bundled.
+- Progress is stored only in this browser’s localStorage, per learner profile. Nothing syncs across browsers or devices; clearing site data deletes it. The Data & privacy screen exports and imports a JSON backup.
+- English is the primary language. Simple explanations: Urdu (اردو), Roman Urdu, Hindi (हिन्दी), Arabic (العربية), Spanish (Español), French (Français), German (Deutsch), Portuguese (Português), Chinese (中文), Japanese (日本語) and Korean (한국어). The interface switches to any of these 12 languages; Urdu and Arabic use right-to-left layout.
+- Lessons are mapped to the ISTQB CTFL v4.0.1 syllabus. Qadence is independent: not affiliated with, endorsed or certified by ISTQB.
+- The career roadmap is planned at about 24 weeks (240–288 hours at 10–12 hours a week). These are planning estimates, not a job guarantee.
+- Content totals: 80 lessons (23 beginner, 38 intermediate, 19 advanced) · 630 MCQs (400 lesson checks + 142 test-bank + 88 scenario questions) · 212 diagrams · 12 scenario tests · 41 drills · 221 interview questions in 13 topics.
+
+## Links
+
+- [Qadence](https://tayabghafor.github.io/qadence/): the live site — landing page, curriculum overview and FAQ; sign in with the demo login shown on screen to open the app
+- [README](https://tayabghafor.github.io/qadence/README.md): what is inside, content totals, local data, demo login and project layout
+- [Source code on GitHub](https://github.com/TayabGhafor/qadence): the MIT-licensed repository (static HTML, CSS and classic JavaScript, no build step)
+
+## Curriculum
+
+Each lesson has objectives, an explanation, a visual guide, a worked example, key terms, practice exercises with model answers, a 5-question quick check with every option explained, interview questions and takeaways.
+
+### Stage 1: QA foundations (12 lessons, about 20–24 hours)
+
+- What software testing is — and why it matters (beginner, 14 min)
+- QA, QC and testing: the tester’s role and mindset (beginner, 13 min)
+- Error, defect, failure and the seven testing principles (beginner, 16 min)
+- Test activities, testware, traceability and independence (beginner, 18 min)
+- SDLC models: Waterfall, V-model, iterative and Agile (beginner, 15 min)
+- The software testing life cycle (STLC) (beginner, 15 min)
+- Test levels and test types (intermediate, 18 min)
+- Static testing, reviews, and verification vs validation (intermediate, 17 min)
+- Testing in Agile and Scrum (intermediate, 18 min)
+- Test-first development: TDD, ATDD and BDD (intermediate, 20 min)
+- Maintenance testing and impact analysis (intermediate, 18 min)
+- Risk-based testing and building a test strategy (advanced, 20 min)
+
+### Stage 2: Manual testing (15 lessons, about 40–48 hours)
+
+- Reading requirements and writing acceptance criteria (beginner, 18 min)
+- Test scenarios and test cases anyone can run (beginner, 18 min)
+- Equivalence partitioning (beginner, 16 min)
+- Boundary value analysis (beginner, 15 min)
+- The bug life cycle and bug reports developers love (beginner, 20 min)
+- QA tools: Jira, test management and bug tracking (beginner, 18 min)
+- Decision table testing (intermediate, 20 min)
+- State transition testing (intermediate, 20 min)
+- White-box testing: statement and branch coverage (intermediate, 18 min)
+- Exploratory testing, charters and error guessing (intermediate, 18 min)
+- Test case prioritization and checklist-based testing (intermediate, 16 min)
+- Smoke, sanity, retest and regression testing (intermediate, 18 min)
+- Test environments, configuration management and test data (intermediate, 18 min)
+- Use cases, pairwise and combinatorial testing (advanced, 22 min)
+- Test planning, estimation, traceability and reporting (advanced, 25 min)
+
+### Stage 3: Web & mobile (8 lessons, about 20–24 hours)
+
+- How the web works for testers (beginner, 18 min)
+- Browser DevTools for testers (beginner, 20 min)
+- Testing forms, inputs and UI components (beginner, 20 min)
+- Cross-browser and responsive testing (intermediate, 22 min)
+- Mobile testing fundamentals (intermediate, 22 min)
+- Interruptions, network, permissions and app lifecycle (intermediate, 24 min)
+- Emulators, simulators, real devices and device clouds (advanced, 25 min)
+- Usability, localization and internationalization testing (advanced, 25 min)
+
+### Stage 4: SQL & APIs (10 lessons, about 40–48 hours)
+
+- Databases and SQL basics for testers (beginner, 20 min)
+- API fundamentals: REST, methods, status codes and JSON (beginner, 22 min)
+- Joins, GROUP BY and aggregates (intermediate, 24 min)
+- Database testing: integrity and verifying persistence (intermediate, 25 min)
+- API testing with Postman (intermediate, 25 min)
+- Authentication vs authorization: 401, 403, tokens and sessions (intermediate, 26 min)
+- REST, SOAP and GraphQL compared (intermediate, 22 min)
+- Negative, contract and schema testing (advanced, 28 min)
+- SQL interview queries: subqueries, ranking and window functions (advanced, 28 min)
+- Mocks, stubs and testing microservices (advanced, 28 min)
+
+### Stage 5: Code & Git (10 lessons, about 30–36 hours)
+
+- Programming basics for testers (JavaScript) (beginner, 20 min)
+- Functions, arrays, objects and JSON (beginner, 22 min)
+- Git fundamentals: commits, branches and diffs (beginner, 22 min)
+- Promises and async/await (intermediate, 25 min)
+- Errors, exceptions and debugging (intermediate, 25 min)
+- TypeScript essentials for test code (intermediate, 24 min)
+- OOP concepts for test automation (intermediate, 24 min)
+- Pull requests, code review and secret hygiene (intermediate, 22 min)
+- Coding exercises asked in QA interviews (intermediate, 28 min)
+- Clean test code: naming, structure and patterns (advanced, 28 min)
+
+### Stage 6: Automation & CI (11 lessons, about 40–48 hours)
+
+- What to automate: the test pyramid and ROI (beginner, 15 min)
+- Playwright basics: locators, actions and assertions (intermediate, 22 min)
+- XPath and CSS selectors that survive change (intermediate, 25 min)
+- Auto-waiting, assertions and synchronisation (intermediate, 20 min)
+- Fixtures, hooks, test isolation and test data (intermediate, 24 min)
+- Playwright, Cypress and Selenium compared (intermediate, 18 min)
+- Selenium WebDriver essentials: waits, TestNG and Grid (intermediate, 30 min)
+- Page Object Model and framework design (advanced, 22 min)
+- Flaky tests: causes, diagnosis and fixes (advanced, 22 min)
+- Running tests in CI/CD (advanced, 22 min)
+- BDD, API automation and visual regression (advanced, 26 min)
+
+### Stage 7: Quality breadth (8 lessons, about 20–24 hours)
+
+- Accessibility testing (intermediate, 22 min)
+- Security testing basics and the OWASP Top 10 (intermediate, 24 min)
+- Performance testing: load, stress, spike and soak (intermediate, 22 min)
+- Reliability, compatibility, recovery and other non-functional testing (intermediate, 20 min)
+- Web performance metrics and tools (advanced, 26 min)
+- Privacy and data protection testing (advanced, 24 min)
+- Release readiness, risk communication and go/no-go (advanced, 22 min)
+- Testing in production, observability and testing AI features (advanced, 28 min)
+
+### Stage 8: Career & capstone (6 lessons, about 30–36 hours)
+
+- Build a QA portfolio and capstone project (beginner, 18 min)
+- Resume, LinkedIn and applying for QA roles (beginner, 18 min)
+- Technical interview preparation (intermediate, 22 min)
+- Behavioural interviews and the STAR method (intermediate, 20 min)
+- QA metrics that matter (and those that mislead) (advanced, 24 min)
+- Career paths, certifications and growing into a lead (advanced, 22 min)
+
+## Interview prep
+
+A question bank of 221 frequently asked QA interview questions, each with a short answer, a model answer, likely follow-ups and mistakes to avoid; plus flashcards, mock interviews with self-scoring and scored practice rounds. Topics:
+
+- Testing fundamentals (21 questions)
+- Test design (18 questions)
+- Bugs & defects (16 questions)
+- Agile & process (15 questions)
+- How would you test…? (18 questions)
+- API testing (21 questions)
+- SQL & databases (19 questions)
+- Automation & Selenium (23 questions)
+- Playwright (17 questions)
+- Coding & OOP (16 questions)
+- Performance & security (12 questions)
+- Mobile testing (10 questions)
+- HR & behavioural (15 questions)
+
+## Practice and tests
+
+- Test Center: quick quiz, stage quizzes, timed level exams (20 questions, 25 minutes, 70% pass mark), a custom test builder and weak-topic tests, each with an explained review.
+- 12 scenario-based case studies (88 questions, some "select all that apply").
+- 41 interactive drills: sort it, put in order, spot the flaw, fill the blank.
+- Six simulated practice apps and six challenges with a code workspace and transparent rubric feedback (submitted code is reviewed by a heuristic rubric, never executed).
+- Career roadmap with milestones, a career ladder, readiness levels and a 30/60/90-day plan; dashboard with XP, levels, streaks and badges.
+
+## Optional
+
+- [Content schema](https://github.com/TayabGhafor/qadence/blob/main/tools/CONTENT_SCHEMA.md): the data contract for lessons, MCQs, drills and scenarios
+- [License](https://tayabghafor.github.io/qadence/LICENSE): MIT License
