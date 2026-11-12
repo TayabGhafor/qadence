@@ -1,0 +1,16 @@
+# Dependencies and tooling (the site itself has no build step)
+node_modules/
+package-lock.json
+.lighthouseci/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Local test output
+test-results/
+playwright-report/
+*.log
