@@ -20,41 +20,128 @@
 </div>
 <div class="challenge-library" id="challengeLibrary"></div>`,
 
-    workspace: `<div class="page-head legacy-head workspace-title"><div><span class="eyebrow">${I('terminal', 'ic-sm')}Built-in practice workspace</span><h1 id="workspaceTitle">PeopleOps Portal · Sign-in and session checks</h1><p id="workspaceDescription">Explore this simulated app, then write the tests and explain your choices.</p></div>
-  <div class="actions workspace-actions"><span class="save-state" id="draftState" role="status">Saved in this browser</span><button class="btn btn-secondary btn-sm" type="button" id="saveWorkspace">${I('save')}Save draft</button><button class="btn btn-primary btn-sm" type="button" id="submitWorkspace">${I('send')}Submit attempt</button></div></div>
-<div class="code-workbench">
-  <section class="work-panel target-panel" aria-labelledby="targetTitle">
-    <div class="work-head"><span>${I('cursor', 'ic-sm')}Practice target</span><span class="badge badge-brand">In this site</span></div>
-    <div class="work-body"><h2 class="work-title" id="targetTitle">PeopleOps Portal</h2><p id="targetScenario" class="muted">Simulated employee sign-in and access control.</p>
-      <div class="target-mini" id="targetAppView"></div>
-      <button class="link-btn" type="button" id="openFullLab">Open full interactive lab${I('arrow-right', 'ic-sm flip-rtl')}</button>
-      <div class="task-list"><b>${I('list-checks', 'ic-sm')}Challenge checklist</b><label class="check-row"><input type="checkbox" data-task-check="valid login"> <span>Valid and invalid login</span></label><label class="check-row"><input type="checkbox" data-task-check="session"> <span>Session and logout behavior</span></label><label class="check-row"><input type="checkbox" data-task-check="protected route"> <span>Protected route access</span></label></div>
+    workspace: `<div class="ide" id="ide" data-view="code">
+  <div class="ide-top">
+    <div class="ide-crumb">
+      <span class="ide-logo" aria-hidden="true">${I('terminal', 'ic-sm')}</span>
+      <div class="ide-title"><small>Code workspace</small><small id="ideTrack" class="ide-track">Web automation · Intermediate</small><h1 id="workspaceTitle">PeopleOps Portal · Login and session checks</h1></div>
+      <label class="ide-pick ide-pick-challenge"><span class="sr-only">Switch challenge</span><select class="ide-select" id="ideChallenge" aria-label="Switch challenge"></select></label>
     </div>
-  </section>
-  <section class="work-panel editor-panel" aria-label="Your solution">
-    <div class="work-head"><span>${I('code', 'ic-sm')}Your solution</span><label class="fw-pick"><span>Framework</span><select class="select" id="frameworkSelect"><option>Playwright · TypeScript</option><option>Cypress · JavaScript</option><option>Selenium · Python</option><option>Postman</option><option>Manual</option></select></label></div>
-    <div class="editor-tabs"><button class="editor-tab active" type="button" data-editor-pane="code">${I('code', 'ic-sm')}Code</button><button class="editor-tab" type="button" data-editor-pane="approach">${I('note', 'ic-sm')}Approach</button><button class="editor-tab" type="button" data-editor-pane="tests">${I('list-checks', 'ic-sm')}Test cases</button></div>
-    <div class="editor-pane active" id="pane-code"><label for="scriptEditor">Automation script</label><div class="code-shell"><div class="codeblock-head"><span class="dots"><i></i><i></i><i></i></span><span>draft.spec · not executed</span></div><textarea id="scriptEditor" class="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea></div><p class="editor-help">${I('info', 'ic-xs')} Draft a script, then run it locally with your selected framework. Qadence stores and reviews your submission; it does not execute arbitrary code.</p></div>
-    <div class="editor-pane" id="pane-approach" hidden><label for="approachEditor">Explain your approach</label><textarea id="approachEditor" class="textarea long-editor" placeholder="What risks did you prioritize? Why these locators and assertions? What is out of scope?"></textarea></div>
-    <div class="editor-pane" id="pane-tests" hidden><label for="testCasesEditor">Test cases and expected results</label><textarea id="testCasesEditor" class="textarea long-editor" placeholder="1. Given ... When ... Then ..."></textarea></div>
-  </section>
-  <aside class="work-panel rubric-panel" aria-label="Review guide">
-    <div class="work-head"><span>${I('clipboard', 'ic-sm')}Review guide</span><span class="badge">100 points</span></div>
-    <div class="work-body">
-      <div class="rubric-line"><b>Coverage</b><span>30</span><small>Happy path, negatives, edges</small></div>
-      <div class="rubric-line"><b>Assertions</b><span>25</span><small>Prove visible outcomes</small></div>
-      <div class="rubric-line"><b>Reliability</b><span>25</span><small>Stable locators and waits</small></div>
-      <div class="rubric-line"><b>Approach</b><span>20</span><small>Clear reasoning and trade-offs</small></div>
-      <button class="btn btn-soft btn-sm hint-action" type="button" id="workspaceHint">${I('bulb')}Reveal a hint</button>
-      <div class="hint-card" id="workspaceHintText" hidden>Start by mapping a valid login, an invalid password, and a direct visit to the protected page after logout. Assert visible results rather than only checking a URL.</div>
-      <button class="link-btn" type="button" id="workspaceModelToggle">${I('eye', 'ic-sm')}Request model approach</button>
-      <div class="hint-card" id="workspaceModel" hidden>A strong solution checks the primary journey, negative inputs, session boundaries, and recovery. Use user-facing locators, wait for a meaningful state, and explain any test data or coverage limits.</div>
-      <div id="submitFeedback" class="submit-feedback" role="status" hidden></div>
+    <div class="ide-actions">
+      <label class="ide-pick"><span class="sr-only">Framework</span>${I('layers', 'ic-sm')}<select class="ide-select" id="frameworkSelect" aria-label="Framework"><option>Playwright · TypeScript</option><option>Cypress · JavaScript</option><option>Selenium · Python</option><option>Postman</option><option>Manual</option></select></label>
+      <span class="ide-save" id="draftState" role="status">Saved in this browser</span>
+      <button class="ide-btn ide-btn-ghost" type="button" id="saveWorkspace" title="Save draft (Ctrl+S)">${I('save', 'ic-sm')}<span>Save</span></button>
+      <button class="ide-btn ide-btn-run" type="button" id="ideRun" title="Run (Ctrl+Enter)">${I('play', 'ic-sm')}<span class="ide-run-label">Run</span><kbd>Ctrl ↵</kbd></button>
+      <button class="ide-btn ide-btn-submit" type="button" id="submitWorkspace" title="Submit for rubric feedback">${I('send', 'ic-sm')}<span>Submit</span></button>
     </div>
-  </aside>
+  </div>
+  <div class="ide-body">
+    <nav class="ide-rail" aria-label="Workspace panels">
+      <button type="button" data-ide-side="files" aria-pressed="true" title="Explorer">${I('layers')}<span class="sr-only">Explorer</span></button>
+      <button type="button" data-ide-side="brief" aria-pressed="false" title="Challenge brief">${I('target')}<span class="sr-only">Challenge brief</span></button>
+      <button type="button" data-ide-side="guide" aria-pressed="false" title="Review guide and hints">${I('clipboard')}<span class="sr-only">Review guide and hints</span></button>
+      <span class="ide-rail-gap"></span>
+      <button type="button" data-ide-side="keys" aria-pressed="false" title="Keyboard shortcuts">${I('keyboard')}<span class="sr-only">Keyboard shortcuts</span></button>
+    </nav>
+    <aside class="ide-side" id="ideSide" aria-label="Workspace side panel">
+      <section class="ide-pane" data-pane="files" aria-labelledby="ideFilesH">
+        <h2 class="ide-pane-h" id="ideFilesH">Explorer</h2>
+        <div class="ide-tree" role="group" aria-label="Files">
+          <div class="ide-folder">${I('chevron-down', 'ic-xs')}<span>challenge</span></div>
+          <button type="button" class="ide-file on" data-file="code"><span class="ide-file-ic" data-ext="js">JS</span><span class="ide-file-name" id="ideFileTree">draft.spec.js</span></button>
+          <button type="button" class="ide-file" data-file="approach"><span class="ide-file-ic" data-ext="md">MD</span><span class="ide-file-name">approach.md</span></button>
+          <button type="button" class="ide-file" data-file="tests"><span class="ide-file-ic" data-ext="md">MD</span><span class="ide-file-name">test-cases.md</span></button>
+        </div>
+        <h2 class="ide-pane-h">Runner</h2>
+        <div class="ide-runner-card" id="ideRunnerCard"></div>
+        <button type="button" class="ide-link" id="ideReset">${I('rotate', 'ic-sm')}<span>Reset to starter</span></button>
+      </section>
+      <section class="ide-pane" data-pane="brief" aria-labelledby="targetTitle" hidden>
+        <h2 class="ide-pane-h">Challenge</h2>
+        <div class="ide-brief">
+          <h3 class="ide-brief-title" id="targetTitle">PeopleOps Portal</h3>
+          <div class="ide-brief-tags" id="ideBriefTags"></div>
+          <p id="workspaceDescription">Explore this simulated app, then write the tests and explain your choices.</p>
+          <p id="targetScenario" class="muted">Simulated employee sign-in and access control.</p>
+        </div>
+        <h2 class="ide-pane-h">Checklist</h2>
+        <div class="ide-checks"><label class="check-row"><input type="checkbox" data-task-check="valid login"> <span>Valid and invalid login</span></label><label class="check-row"><input type="checkbox" data-task-check="session"> <span>Session and logout behaviour</span></label><label class="check-row"><input type="checkbox" data-task-check="protected route"> <span>Protected route access</span></label></div>
+        <button class="ide-link" type="button" id="openFullLab">${I('flask', 'ic-sm')}<span>Open the full interactive lab</span></button>
+      </section>
+      <section class="ide-pane" data-pane="guide" aria-labelledby="ideGuideH" hidden>
+        <h2 class="ide-pane-h" id="ideGuideH">Review guide · 100 points</h2>
+        <div class="ide-rubric">
+          <div><b>Coverage</b><span>30</span><small>Happy path, negatives, edges</small></div>
+          <div><b>Assertions</b><span>25</span><small>Prove visible outcomes</small></div>
+          <div><b>Reliability</b><span>25</span><small>Stable locators and waits</small></div>
+          <div><b>Approach</b><span>20</span><small>Clear reasoning and trade-offs</small></div>
+        </div>
+        <button class="ide-link" type="button" id="workspaceHint">${I('bulb', 'ic-sm')}<span>Reveal a hint</span></button>
+        <div class="ide-hint" id="workspaceHintText" hidden>Start by mapping a valid login, an invalid password, and a direct visit to the protected page after logout. Assert visible results rather than only checking a URL.</div>
+        <button class="ide-link" type="button" id="workspaceModelToggle">${I('eye', 'ic-sm')}<span>Request model approach</span></button>
+        <div class="ide-hint" id="workspaceModel" hidden>A strong solution checks the primary journey, negative inputs, session boundaries, and recovery. Use user-facing locators, wait for a meaningful state, and explain any test data or coverage limits.</div>
+        <div id="submitFeedback" class="submit-feedback" role="status" hidden></div>
+      </section>
+      <section class="ide-pane" data-pane="keys" aria-labelledby="ideKeysH" hidden>
+        <h2 class="ide-pane-h" id="ideKeysH">Keyboard shortcuts</h2>
+        <dl class="ide-keys">
+          <div><dt><kbd>Ctrl</kbd><kbd>Enter</kbd></dt><dd>Run</dd></div>
+          <div><dt><kbd>Ctrl</kbd><kbd>S</kbd></dt><dd>Save draft</dd></div>
+          <div><dt><kbd>Ctrl</kbd><kbd>/</kbd></dt><dd>Toggle comment</dd></div>
+          <div><dt><kbd>Tab</kbd></dt><dd>Indent</dd></div>
+          <div><dt><kbd>Shift</kbd><kbd>Tab</kbd></dt><dd>Outdent</dd></div>
+          <div><dt><kbd>Esc</kbd> then <kbd>Tab</kbd></dt><dd>Leave the editor</dd></div>
+        </dl>
+        <p class="ide-note">On a Mac use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</p>
+      </section>
+    </aside>
+    <div class="ide-center">
+      <div class="editor-tabs ide-tabs" role="group" aria-label="Open files">
+        <button class="editor-tab active" type="button" data-editor-pane="code"><span class="ide-file-ic" data-ext="js" id="ideTabIcon">JS</span><span id="ideFileName">draft.spec.js</span></button>
+        <button class="editor-tab" type="button" data-editor-pane="approach"><span class="ide-file-ic" data-ext="md">MD</span><span>approach.md</span></button>
+        <button class="editor-tab" type="button" data-editor-pane="tests"><span class="ide-file-ic" data-ext="md">MD</span><span>test-cases.md</span></button>
+      </div>
+      <div class="ide-editors">
+        <div class="editor-pane active" id="pane-code"><label class="sr-only" for="scriptEditor">Automation script</label><div class="ce" data-lang="js"><div class="ce-gutter" aria-hidden="true"></div><div class="ce-scroll"><div class="ce-line" aria-hidden="true"></div><pre class="ce-hl" aria-hidden="true"><code></code></pre><textarea id="scriptEditor" class="ce-input" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" dir="ltr" aria-describedby="ideEditorHelp"></textarea></div></div></div>
+        <div class="editor-pane" id="pane-approach" hidden><label class="sr-only" for="approachEditor">Explain your approach</label><div class="ce" data-lang="md"><div class="ce-gutter" aria-hidden="true"></div><div class="ce-scroll"><div class="ce-line" aria-hidden="true"></div><pre class="ce-hl" aria-hidden="true"><code></code></pre><textarea id="approachEditor" class="ce-input" spellcheck="true" wrap="off" dir="ltr" placeholder="# Approach&#10;- Risks I prioritised and why&#10;- Locators and assertions I chose&#10;- What is out of scope" aria-describedby="ideEditorHelp"></textarea></div></div></div>
+        <div class="editor-pane" id="pane-tests" hidden><label class="sr-only" for="testCasesEditor">Test cases and expected results</label><div class="ce" data-lang="md"><div class="ce-gutter" aria-hidden="true"></div><div class="ce-scroll"><div class="ce-line" aria-hidden="true"></div><pre class="ce-hl" aria-hidden="true"><code></code></pre><textarea id="testCasesEditor" class="ce-input" spellcheck="true" wrap="off" dir="ltr" placeholder="1. Given … When … Then …&#10;2. …" aria-describedby="ideEditorHelp"></textarea></div></div></div>
+        <p class="sr-only" id="ideEditorHelp">Code editor. Tab indents. Press Escape, then Tab, to move focus out of the editor. Control plus Enter runs the code.</p>
+      </div>
+      <div class="ide-split ide-split-h" role="separator" aria-orientation="horizontal" aria-label="Resize the output panel" aria-controls="idePanel" tabindex="0"></div>
+      <section class="ide-panel" id="idePanel" aria-label="Run output">
+        <div class="ide-panel-bar">
+          <div class="ide-ptabs" role="tablist" aria-label="Output">
+            <button type="button" role="tab" id="ideTabTests" aria-controls="ideTests" aria-selected="true" data-ide-out="tests">${I('list-checks', 'ic-sm')}<span>Tests</span><em id="ideTestsBadge" hidden></em></button>
+            <button type="button" role="tab" id="ideTabOutput" aria-controls="ideConsole" aria-selected="false" tabindex="-1" data-ide-out="output">${I('terminal', 'ic-sm')}<span>Output</span><em id="ideLogBadge" hidden></em></button>
+          </div>
+          <div class="ide-panel-acts"><button type="button" class="ide-icon" id="ideClear" title="Clear output">${I('trash', 'ic-sm')}<span class="sr-only">Clear output</span></button><button type="button" class="ide-icon" id="ideCollapse" title="Collapse panel" aria-expanded="true" aria-controls="idePanel">${I('chevron-down', 'ic-sm')}<span class="sr-only">Collapse panel</span></button></div>
+        </div>
+        <div class="ide-out" id="ideTests" role="tabpanel" aria-labelledby="ideTabTests"></div>
+        <div class="ide-out ide-console" id="ideConsole" role="tabpanel" aria-labelledby="ideTabOutput" hidden></div>
+      </section>
+    </div>
+    <div class="ide-split ide-split-v" role="separator" aria-orientation="vertical" aria-label="Resize the preview" aria-controls="idePreview" tabindex="0"></div>
+    <section class="ide-preview" id="idePreview" aria-label="Live preview">
+      <div class="ide-browser"><span class="ide-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ide-url">${I('lock', 'ic-xs')}<span id="ideUrl">peopleops.sim/</span></span><button type="button" class="ide-icon" id="ideReload" title="Reset the app">${I('rotate', 'ic-sm')}<span class="sr-only">Reset the app</span></button></div>
+      <div class="ide-preview-body" id="idePreviewBody"><div class="target-mini" id="targetAppView"></div></div>
+      <div class="ide-preview-foot">${I('cursor', 'ic-xs')}<span>Live simulation — your test's actions are highlighted here</span></div>
+    </section>
+  </div>
+  <div class="ide-status">
+    <span class="ide-st" id="ideLang">JavaScript</span><span class="ide-st" id="ideCursor">Ln 1, Col 1</span><span class="ide-st ide-st-wide">Spaces: 2</span>
+    <span class="ide-st ide-st-run" id="ideRunState" role="status">Runner ready</span>
+    <span class="ide-st ide-st-hint">Esc then Tab leaves the editor</span>
+  </div>
+  <div class="ide-views" role="tablist" aria-label="Workspace view">
+    <button type="button" role="tab" data-ide-view="code" aria-selected="true">${I('code', 'ic-sm')}<span>Code</span></button>
+    <button type="button" role="tab" data-ide-view="preview" aria-selected="false">${I('monitor', 'ic-sm')}<span>Preview</span></button>
+    <button type="button" role="tab" data-ide-view="output" aria-selected="false">${I('terminal', 'ic-sm')}<span>Output</span></button>
+    <button type="button" role="tab" data-ide-view="side" aria-selected="false">${I('target', 'ic-sm')}<span>Brief</span></button>
+  </div>
 </div>`,
 
-    submissions: `${head('inbox', 'Your work', 'My submissions', 'Your code, approach, attempts and rubric notes — stored only in this browser. Submitted code is reviewed by a transparent heuristic and never executed.', `<button class="btn btn-secondary btn-sm" type="button" id="exportSubmissions">${I('download')}Export submissions</button>`)}
+
+    submissions: `${head('inbox', 'Your work', 'My submissions', 'Your code, approach and rubric notes — stored only in this browser. Code you run executes in an isolated sandbox in your browser; scores come from a transparent rubric.', `<button class="btn btn-secondary btn-sm" type="button" id="exportSubmissions">${I('download')}Export submissions</button>`)}
 <div id="submissionList" class="submission-list"></div>`,
 
     practice: `<div id="interviewHub"></div>

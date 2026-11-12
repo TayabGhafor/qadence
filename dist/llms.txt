@@ -150,7 +150,7 @@ A question bank of 221 frequently asked QA interview questions, each with a shor
 - Test Center: quick quiz, stage quizzes, timed level exams (20 questions, 25 minutes, 70% pass mark), a custom test builder and weak-topic tests, each with an explained review.
 - 12 scenario-based case studies (88 questions, some "select all that apply").
 - 41 interactive drills: sort it, put in order, spot the flaw, fill the blank.
-- Six simulated practice apps and six challenges with a code workspace and transparent rubric feedback (submitted code is reviewed by a heuristic rubric, never executed).
+- Six simulated practice apps and six challenges with an in-browser code workspace: tests (Playwright-style, Cypress subset, Postman pm, plain JavaScript) run in an isolated sandbox against a live preview of the simulated app, with transparent rubric feedback on submission.
 - Career roadmap with milestones, a career ladder, readiness levels and a 30/60/90-day plan; dashboard with XP, levels, streaks and badges.
 
 ## Optional

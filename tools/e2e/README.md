@@ -9,6 +9,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist   # from the sqa-i
 node tools/e2e/smoke.js http://127.0.0.1:8765/                   # regression: 22 checks
 node tools/e2e/features.js http://127.0.0.1:8765/                # new features: 152 checks
 BROWSER=firefox node tools/e2e/features.js http://127.0.0.1:8765/
+node tools/e2e/workspace.js http://127.0.0.1:8765/               # code workspace IDE + sandboxed runner: 35 checks
 ```
 
 Both scripts clear this site's localStorage in their own browser context; they never touch your normal browser profile.

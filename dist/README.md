@@ -15,7 +15,7 @@
 | **Test Center** | Quick quiz, stage quizzes, timed level exams (20 questions, 25 minutes, 70% pass mark), a custom test builder, weak-topic tests and 12 scenario-based case studies (88 questions, some "select all that apply"). Every result is saved with a full explained review and a by-topic breakdown. |
 | **Practice drills** | 41 interactive drills: sort it, put in order, spot the flaw, fill the blank — instant feedback, keyboard-operable. |
 | **Career roadmap** | A visual road through the 8 stages (~24 weeks, 240–288 hours as planning estimates), milestone flags for when to apply, a career ladder from learner to lead with specialisation branches, readiness levels, a weekly rhythm chart and a 30/60/90-day plan, plus the detailed stage guides. |
-| **Practice labs & challenges** | Six simulated apps and six challenges with a code workspace and transparent rubric feedback. |
+| **Practice labs & challenges** | Six simulated apps and six challenges. The **code workspace** is a minimal in-browser IDE: syntax highlighting, line numbers, file tabs (spec, approach, test cases), challenge switcher, resizable panels, keyboard shortcuts, and a **Run** button that executes your tests in an isolated sandbox against a live preview of the simulated app — Playwright-style (`page.getByRole`, `expect(…).toBeVisible()` …), a Cypress subset, Postman `pm` tests and plain JavaScript, with per-test steps, expected-vs-received errors, jump-to-line and console output. Submissions get transparent rubric feedback plus the last run result. |
 | **Dashboard, profile & progress** | XP, levels, streaks, weekly goal, 17 badges, activity heatmap, test score trend, weak topics, editable learner profile, light/dark/system theme, and multiple learner profiles on one device. |
 | **Data & privacy** | A clear picture of what is stored, a data-flow diagram, export / validated import / reset, and a privacy FAQ. |
 
@@ -38,7 +38,7 @@ All progress is stored in this browser's local storage, per learner profile: Lea
 
 The **Data & privacy** screen lists exactly what is stored, shows storage status and size, and lets you export a JSON backup, restore a validated backup (older *SQA Practice Room* backups still import), or erase local practice data. Storage keys are unchanged from earlier versions (`sqaPracticeRoom.v1`, schema version 3), so existing progress carries over.
 
-The practice targets use fictional, simulated data inside this page. Code typed into the workspace is stored and reviewed with a transparent heuristic rubric; the site does not execute submitted code.
+The practice targets use fictional, simulated data inside this page. Code in the workspace runs only when you press **Run**, inside a Web Worker sandbox in your browser (no DOM or storage access, network APIs disabled, each test stopped after 10 seconds); page actions are applied to the simulated preview only. Nothing is uploaded. Selenium (Python) and manual plans are saved and scored but not executed in the browser.
 
 ## Project layout
 
@@ -55,6 +55,7 @@ dist/
   js/legacy-markup.js, js/legacy-core.js   ported interview, labs, challenges, workspace, sign-in
   js/roadmap.js         career roadmap, storage helpers, export / import / reset
   js/academy.js, js/tests.js, js/drills.js, js/interview.js, js/app.js
+  js/workspace.js       code workspace IDE: editor, sandboxed runner (Web Worker) and preview driver
   css/diagrams.css      diagram styles
   content/              curriculum (classic scripts): taxonomy.js (order, groups, collections, prerequisites),
                         lessons-*.js, visuals-*.js, explain-<lang>.js, interview-*.js, scenarios.js, roadmap-data.js
@@ -68,7 +69,7 @@ tools/
                         Site URL lives in its SITE_URL constant. `--check` fails if anything is stale.
   og-image.html, render-images.js   social card and app icons (needs playwright-core locally)
   render-guide.js       renders docs/seo-setup-guide.html to docs/SEO-Setup-Guide.pdf (needs playwright-core locally)
-  e2e/                  browser checks (regression smoke + feature suite) — see tools/e2e/README.md
+  e2e/                  browser checks (regression smoke, feature suite, code workspace) — see tools/e2e/README.md
 docs/SEO-Setup-Guide.pdf      step-by-step guide: Google Search Console and an optional custom domain
 .github/workflows/pages.yml   validates content and SEO files, then deploys dist/ to GitHub Pages
 ```

@@ -271,7 +271,7 @@ function llms(d, c) {
   L.push('- Test Center: quick quiz, stage quizzes, timed level exams (20 questions, 25 minutes, 70% pass mark), a custom test builder and weak-topic tests, each with an explained review.');
   L.push(`- ${s.scenarios} scenario-based case studies (${s.scenarioQs} questions, some "select all that apply").`);
   L.push(`- ${s.drills} interactive drills: sort it, put in order, spot the flaw, fill the blank.`);
-  L.push('- Six simulated practice apps and six challenges with a code workspace and transparent rubric feedback (submitted code is reviewed by a heuristic rubric, never executed).');
+  L.push('- Six simulated practice apps and six challenges with an in-browser code workspace: tests (Playwright-style, Cypress subset, Postman pm, plain JavaScript) run in an isolated sandbox against a live preview of the simulated app, with transparent rubric feedback on submission.');
   L.push('- Career roadmap with milestones, a career ladder, readiness levels and a 30/60/90-day plan; dashboard with XP, levels, streaks and badges.', '');
   L.push('## Optional', '');
   L.push(`- [Content schema](${REPO_URL}/blob/main/tools/CONTENT_SCHEMA.md): the data contract for lessons, MCQs, drills and scenarios`);

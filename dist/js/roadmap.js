@@ -94,7 +94,7 @@
     safe.submissions = Array.isArray(input.submissions) ? input.submissions.filter(x => isObj(x) && knownChallenge(x.challengeId)).slice(0, 200).map((x, n) => {
       const c = knownChallenge(x.challengeId), r = isObj(x.rubric) ? x.rubric : {};
       const clamp = (v, max) => Math.max(0, Math.min(max, Math.round(+v || 0)));
-      return { id: `import-${Date.now()}-${n}`, challengeId: c.id, title: c.title, framework: String(x.framework || '').slice(0, 60), code: String(x.code || '').slice(0, 50000), approach: String(x.approach || '').slice(0, 10000), testCases: String(x.testCases || '').slice(0, 10000), rubric: { coverage: clamp(r.coverage, 30), assertions: clamp(r.assertions, 25), reliability: clamp(r.reliability, 25), approach: clamp(r.approach, 20) }, score: clamp(x.score, 100), createdAt: isoOrNow(x.createdAt), executed: false };
+      return { id: `import-${Date.now()}-${n}`, challengeId: c.id, title: c.title, framework: String(x.framework || '').slice(0, 60), code: String(x.code || '').slice(0, 50000), approach: String(x.approach || '').slice(0, 10000), testCases: String(x.testCases || '').slice(0, 10000), rubric: { coverage: clamp(r.coverage, 30), assertions: clamp(r.assertions, 25), reliability: clamp(r.reliability, 25), approach: clamp(r.approach, 20) }, score: clamp(x.score, 100), createdAt: isoOrNow(x.createdAt), executed: isObj(x.run), run: isObj(x.run) ? { passed: clamp(x.run.passed, 999), failed: clamp(x.run.failed, 999), total: clamp(x.run.total, 999) } : null };
     }) : [];
     safe.challengeWeak = Array.isArray(input.challengeWeak) ? [...new Set(input.challengeWeak.filter(id => knownChallenge(id)))] : [];
     safe.labAttempts = isObj(input.labAttempts) ? Object.fromEntries(Object.entries(input.labAttempts).filter(([k]) => Object.prototype.hasOwnProperty.call(LABS, k)).map(([k, v]) => [k, Math.max(0, Math.min(100000, Math.round(+v || 0)))])) : {};
@@ -854,7 +854,7 @@ ${STAGES.map(s => { const st = stageState(s); return `<tr><th scope="row">${stag
   ${qa('users', 'Who can see this data?', 'Anyone who uses this browser profile, including every learner profile on it. The Admin login is a shared public demo, not real security.')}
   ${qa('clock', 'How long does it last?', 'Until you erase it here or <b>clear this site’s data</b> in your browser — that deletes it for good unless you exported a backup. Private windows discard it on close. Signing out keeps it.')}
   ${qa('monitor', 'Can I use it on another device?', 'There is no sync. Export a backup here and import it on the other browser.')}
-  ${qa('code', 'Is my code run or uploaded?', 'No. Workspace code is saved as a draft in this browser and reviewed with a transparent rubric.')}
+  ${qa('code', 'Is my code run or uploaded?', 'Only when you press Run, and only inside an isolated sandbox in this browser with no network access. Nothing is uploaded; drafts stay here and submissions are scored with a transparent rubric.')}
   ${qa('route', 'How does my data flow?', 'No server, no analytics, no sync — the only copy you can make is an export.', `<div class="priv-flow">${flow}</div>`)}
 </div>`;
   }
