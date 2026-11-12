@@ -87,11 +87,10 @@
     return Math.min(95, Math.round(p));
   }
   function lessonCard(l) {
-    const s = status(l), g = GROUP_OF.get(l.id), vis = (l.visuals || []).length;
+    const s = status(l);
     return `<button type="button" class="lesson-card ${s === 'done' ? 'done' : ''}" data-go="academy/lesson/${l.id}" style="${stageStyle(l.stage)}">
       <span class="lc-top"><span class="lc-seq" title="Step ${l.seq} of ${LESSONS.length} in the recommended path">${String(l.seq).padStart(2, '0')}</span>${lvlBadge(l.level)}</span>
       <h3>${esc(l.title)}</h3><p>${esc(l.summary)}</p>
-      <span class="lc-tags">${g ? `<span class="lc-tag">${icon(g.icon, 'ic-xs')}${esc(g.name)}</span>` : ''}${vis ? `<span class="lc-tag">${icon('route', 'ic-xs')}${vis} visual${vis > 1 ? 's' : ''}</span>` : ''}</span>
       <span class="lc-foot"><span>${icon('clock', 'ic-xs')}${esc(t('common.min', { n: l.minutes }))}${ac().bookmarks.includes(l.id) ? ` · ${icon('bookmark', 'ic-xs')}` : ''}</span>${statusLabel(s)}</span>
       ${s === 'prog' ? `<span class="lc-prog" style="--p:${lessonProgress(l)}%"></span>` : ''}
     </button>`;

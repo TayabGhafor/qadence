@@ -302,8 +302,8 @@
       <article class="road-card">
         <div class="road-card-top"><span class="tile stage-tile">${icon((typeof STAGE_META !== 'undefined' && STAGE_META[s.id] && STAGE_META[s.id].icon) || 'flag')}</span><div><small>Stage ${stageNo(s)} · ${esc(s.weeks)}</small><h3>${esc(s.title)}</h3></div><span class="lh-status s-${st.status}">${statusHtml(st.status)}</span></div>
         <p class="road-tag">${esc(s.tagline)}</p>
-        <div class="road-facts"><span>${icon('clock', 'ic-xs')}${s.hours[0]}–${s.hours[1]} h (estimate)</span><span>${icon('calendar', 'ic-xs')}${esc(weeksAtPace(s))}</span><span>${icon('book', 'ic-xs')}${lDone}/${lessons.length} lessons</span></div>
-        <p class="road-deliver"><b>Deliver:</b> ${esc(s.deliver)}</p>
+        <div class="road-facts"><span>${icon('clock', 'ic-xs')}${s.hours[0]}–${s.hours[1]} h</span>${pace().id === 'base' ? '' : `<span>${icon('calendar', 'ic-xs')}${esc(weeksAtPace(s))}</span>`}<span>${icon('book', 'ic-xs')}${lDone}/${lessons.length} lessons</span></div>
+        <p class="road-deliver"><span class="sr-only">Deliverable: </span>${icon('target', 'ic-xs')}${esc(s.deliver.replace(/\s*\(Visual Roadmap[^)]*\)/, ''))}</p>
         ${barHtml(lessons.length ? lDone / lessons.length * 100 : 0, `Stage ${stageNo(s)} lessons complete`, 'bar-sm stage-bar')}
         <div class="road-actions"><button class="btn btn-sm ${st.status === 'complete' ? 'btn-secondary' : 'btn-primary'}" type="button" data-open-stage="${s.id}" aria-label="${verb}: Stage ${stageNo(s)}, ${esc(s.title)}">${icon('route')}${verb}</button><button class="btn btn-ghost btn-sm" type="button" data-go="academy/stage/${s.id}">${icon('book')}Lessons</button>${st.review ? `<span class="lh-flag">${icon('rotate', 'ic-xs')}Review suggested</span>` : ''}</div>
       </article>
@@ -317,7 +317,6 @@
     const weakQ = Object.keys(state.weak || {}).filter(id => bank.some(q => q.id === id));
     const weakC = (state.challengeWeak || []).filter(id => challengeData.some(c => c.id === id));
     const p = pace();
-    const capstone = STAGES[STAGES.length - 1];
     const reviseCount = reviewStages.length + (weakQ.length ? 1 : 0) + weakC.length;
     const hrs = STAGES.reduce((a, s) => [a[0] + s.hours[0], a[1] + s.hours[1]], [0, 0]);
     const curIdx = STAGES.findIndex(s => !l.completed.includes(s.id));
@@ -329,28 +328,28 @@
   <div class="road-hero-copy">
     <span class="eyebrow on-dark-eyebrow">${icon('route', 'ic-sm')}Career roadmap · ${STAGES.length} stages · about 24 weeks</span>
     <h2>From first test case to your first QA job</h2>
-    <p>A self-paced roadmap built from a two-part SQA career handbook. Follow the road, finish each stage’s deliverable, and collect portfolio evidence on the way. Hours and weeks are planning estimates — not hiring guarantees.</p>
+    <p>Eight self-paced stages, each with one deliverable for your portfolio. Hours are estimates, not guarantees.</p>
     <div class="road-hero-stats"><div><b>${STAGES.length}</b><span>stages</span></div><div><b>${hrs[0]}–${hrs[1]}</b><span>hours (estimate)</span></div><div><b>${done}/${STAGES.length}</b><span>complete</span></div><div><b>${esc(p.label.replace(' a week', ''))}</b><span>your pace</span></div></div>
     <div class="lh-hero-actions">${primaryAction('light') || '<p class="lh-done-all">All eight stages are complete. Keep revising, applying and improving from feedback.</p>'}${reviseCount ? `<button class="btn btn-glass btn-sm" type="button" data-goto-revise>${icon('rotate')}Revise weak areas (${reviseCount})</button>` : ''}</div>
   </div>
   <div class="road-hero-ring ring" style="--size:168px" aria-hidden="true">${ringSvg(pct, 168, 13)}<div class="ring-label"><b>${pct}%</b><span>of the road</span></div></div>
 </section>
 <section class="road-section" aria-labelledby="lhStagesH">
-  <div class="section-title"><div><h2 id="lhStagesH">${icon('route')} Your learning road</h2><p>Each stop is a stage. The road fills in as you complete stage guides; flags mark when to start applying.</p></div></div>
+  <div class="section-title"><div><h2 id="lhStagesH">${icon('route')} Your learning road</h2></div></div>
   <ol class="road" style="--done:${STAGES.length ? (curIdx < 0 ? 100 : (curIdx / STAGES.length) * 100) : 0}%">
     <li class="road-start" aria-hidden="true"><span>${icon('play', 'ic-sm')}Start</span></li>
     ${STAGES.map((s, i) => roadStop(s, i) + (flags[i + 1] ? `<li class="road-flag${STAGES.slice(0, i + 1).every(x => l.completed.includes(x.id)) ? ' met' : ''}"><span class="road-flag-pin">${icon(flags[i + 1].icon)}</span><div><b>${esc(flags[i + 1].title)}</b><small>${esc(flags[i + 1].text)}</small></div></li>` : '')).join('')}
   </ol>
 </section>
 <section class="road-section" aria-labelledby="ladderH">
-  <div class="section-title"><div><h2 id="ladderH">${icon('trending')} Where QA careers go</h2><p>Typical progression and specialisations. Titles and timelines vary by company and country — evidence and impact matter more than years.</p></div></div>
+  <div class="section-title"><div><h2 id="ladderH">${icon('trending')} Where QA careers go</h2><p>Typical titles — they vary by company and country.</p></div></div>
   <ol class="ladder">${LADDER.map((x, i) => `<li class="ladder-step${i === 0 ? ' now' : ''}" style="--i:${i}"><span class="ladder-icon">${icon(x.icon)}</span><small>${esc(x.when)}</small><b>${esc(x.title)}</b><p>${esc(x.text)}</p></li>`).join('')}</ol>
   <div class="branches-head">${icon('git', 'ic-sm')}Specialise as you grow</div>
-  <div class="branches">${BRANCHES.map(b => `<button type="button" class="branch" data-go="academy/topic/${b.group}"><span class="tile tile-sm">${icon(b.icon)}</span><b>${esc(b.title)}</b><ul>${b.skills.map(sk => `<li>${esc(sk)}</li>`).join('')}</ul><span class="branch-go">Related lessons${icon('arrow-right', 'ic-xs flip-rtl')}</span></button>`).join('')}</div>
+  <div class="branches">${BRANCHES.map(b => `<button type="button" class="branch" data-go="academy/topic/${b.group}"><span class="tile tile-sm">${icon(b.icon)}</span><b>${esc(b.title)}</b><span class="branch-skills">${b.skills.map(esc).join(' · ')}</span><span class="branch-go">Related lessons${icon('arrow-right', 'ic-xs flip-rtl')}</span></button>`).join('')}</div>
 </section>
 <div class="road-grid">
   <section class="card road-panel" aria-labelledby="lhLevelsH"><div class="card-title"><h3 id="lhLevelsH">${icon('flag')} Three levels of readiness</h3></div>
-    <ol class="ready-steps">${L.plan.levels.map((v, i) => { const met = STAGES.slice(0, v.after).every(s => l.completed.includes(s.id)); return `<li class="${met ? 'met' : ''}"><span class="ready-dot">${met ? icon('check', 'ic-xs') : i + 1}</span><div><b>${esc(v.label)}</b><small>typically after Stage ${v.after}</small><p>${esc(v.text)}</p></div></li>`; }).join('')}</ol>
+    <ol class="ready-steps">${L.plan.levels.map((v, i) => { const met = STAGES.slice(0, v.after).every(s => l.completed.includes(s.id)); return `<li class="${met ? 'met' : ''}"><span class="ready-dot">${met ? icon('check', 'ic-xs') : i + 1}</span><div><b>${esc(v.label)}</b><small>after Stage ${v.after}</small><p title="${esc(v.text)}">${esc(v.text)}</p></div></li>`; }).join('')}</ol>
   </section>
   <section class="card road-panel" aria-labelledby="lhPlanH"><div class="card-title"><h3 id="lhPlanH">${icon('calendar')} A sustainable week (${rhythmTotal} hours)</h3></div>
     <div class="rhythm-bar" role="img" aria-label="${L.plan.rhythm.map(r => r.label + ' ' + r.hours).join(', ')}">${L.plan.rhythm.map((r, i) => `<span style="flex:${parseFloat(r.hours)};background:${rhythmColors[i % 4]}" title="${esc(r.label)}: ${esc(r.hours)}"></span>`).join('')}</div>
@@ -359,7 +358,6 @@
     <ol class="days-tl">${L.plan.days.map(d => `<li><b>${esc(d.day)}</b><span>${esc(d.text)}</span></li>`).join('')}</ol>
   </section>
   <section class="card road-panel" aria-labelledby="lhPaceH"><div class="card-title"><h3 id="lhPaceH">${icon('clock')} Your pace</h3></div>
-    <p class="lh-sub">Hours are estimates from the roadmap. Evidence you can explain matters more than the calendar.</p>
     <fieldset class="lh-pace"><legend class="sr-only">Study hours per week</legend>
     ${L.paces.map(x => `<label class="lh-radio"><input type="radio" name="lhPace" value="${x.id}"${x.id === p.id ? ' checked' : ''}><span><b>${esc(x.label)}</b><small>${esc(x.total)}</small></span></label>`).join('')}
     </fieldset>
@@ -369,10 +367,10 @@
       ${reviewStages.map(s => `<li><span>Stage ${stageNo(s)} · ${esc(s.title)} <small>a knowledge check was missed first time</small></span><button class="btn btn-ghost btn-sm" type="button" data-open-stage="${s.id}" data-step="4">Retake check${icon('arrow-right', 'ic-sm flip-rtl')}</button></li>`).join('')}
       ${weakQ.length ? `<li><span>${weakQ.length} interview answer${weakQ.length > 1 ? 's' : ''} scored below 6/8</span><button class="btn btn-ghost btn-sm" type="button" data-revise-interview>Revise${icon('arrow-right', 'ic-sm flip-rtl')}</button></li>` : ''}
       ${weakC.map(id => `<li><span>${esc(challengeTitle(id))} <small>low challenge score</small></span><button class="btn btn-ghost btn-sm" type="button" data-open-challenge="${id}">Revise${icon('arrow-right', 'ic-sm flip-rtl')}</button></li>`).join('')}
-    </ul>` : '<p class="lh-empty">Nothing to revise yet. Knowledge checks you miss on the first try, interview answers below 6/8 and low challenge scores will appear here.</p>'}
+    </ul>` : '<p class="lh-empty">Nothing to revise yet — missed checks and low scores will show up here.</p>'}
   </section>
 </div>
-<p class="source-note">${esc(L.sourceNote)} Capstone readiness checklist lives in Stage ${stageNo(capstone)}.</p>`;
+<p class="source-note">Adapted from an SQA career roadmap handbook. Hours, weeks and targets are planning estimates, not hiring guarantees.</p>`;
   }
   function stageCard(s) {
     const st = stageState(s);
@@ -736,7 +734,7 @@ ${s.quiz.map((q, k) => `<fieldset class="lq" id="lq-${s.id}-${k}"><legend><span 
     const root = $('learningProgressPanel'); if (!root) return;
     const l = ld(), totalChecks = STAGES.reduce((n, s) => n + s.quiz.length, 0);
     const correct = STAGES.reduce((n, s) => n + stageState(s).correct, 0);
-    root.innerHTML = `<div class="panel-head"><span class="tile tile-sm" data-tone="violet">${icon('route')}</span><div><h3>Career roadmap progress</h3><p class="sub">${l.completed.length} of ${STAGES.length} stages complete · ${correct} of ${totalChecks} knowledge checks correct · ${Object.keys(l.notes).length} lessons with notes</p></div></div>
+    root.innerHTML = `<div class="panel-head"><span class="tile tile-sm" data-tone="violet">${icon('route')}</span><div><h3>Career roadmap progress</h3><p class="sub">${l.completed.length}/${STAGES.length} stages · ${correct}/${totalChecks} checks correct</p></div></div>
 <div class="tbl-wrap"><table class="lv-table lh-progress-table"><caption class="sr-only">Progress for each learning stage</caption><thead><tr><th scope="col">Stage</th><th scope="col">Status</th><th scope="col">Checks</th><th scope="col"><span class="sr-only">Open</span></th></tr></thead><tbody>
 ${STAGES.map(s => { const st = stageState(s); return `<tr><th scope="row">${stageNo(s)} · ${esc(s.title)}${st.review ? ` <small class="lh-flag-inline">${icon('rotate','ic-xs')}review</small>` : ''}</th><td><span class="lh-status s-${st.status}">${statusHtml(st.status)}</span></td><td>${st.correct}/${st.total}</td><td><button class="quiet" type="button" data-open-stage="${s.id}" aria-label="Open Stage ${stageNo(s)}, ${esc(s.title)}">Open${icon('arrow-right','ic-sm flip-rtl')}</button></td></tr>`; }).join('')}
 </tbody></table></div>`;
@@ -805,56 +803,60 @@ ${STAGES.map(s => { const st = stageState(s); return `<tr><th scope="row">${stag
         ['Roadmap notes and edited examples', KEY, `${Object.keys(l.notes).length} notes · ${Object.keys(l.code).length} examples`],
         ['Position, steps seen, task ticks, pace, readiness checklist', KEY, active ? `Last opened: Stage ${stageNo(active)} · pace ${esc(pace().label)}` : `Pace ${esc(pace().label)}`]] }
     ];
-    const flow = window.QA_DIAGRAMS ? QA_DIAGRAMS.render({ t: 'flowchart', dir: 'right', title: 'How your data flows', nodes: [
+    const flow = window.QA_DIAGRAMS ? QA_DIAGRAMS.render({ t: 'flowchart', dir: 'right', nodes: [
       { id: 'you', label: 'You learn and practise', kind: 'start' }, { id: 'app', label: 'Qadence runs in this browser' }, { id: 'ls', label: 'Saved in local storage on this device', kind: 'io' },
       { id: 'q', label: 'Want a copy?', kind: 'decision' }, { id: 'file', label: 'JSON backup file you download', kind: 'end' }, { id: 'stay', label: 'Stays only here — no server', kind: 'end' }],
       edges: [{ from: 'you', to: 'app' }, { from: 'app', to: 'ls' }, { from: 'ls', to: 'q' }, { from: 'q', to: 'file', label: 'Export' }, { from: 'q', to: 'stay', label: 'No' }],
-      caption: 'There is no upload step anywhere: no account server, no analytics, no sync. Only you can create a copy, by exporting it.' }) : '';
+      caption: '' }) : '';
+    const n = v => `<b class="tnum">${v}</b>`;
+    const tiles = [
+      { icon: 'book', tone: '', label: 'Learning Lab', value: `${Object.keys(ac.completed || {}).length}<small>/${LESSONS.length}</small>`, sub: `lessons · ${Object.keys(ac.notes || {}).length} notes` },
+      { icon: 'clipboard', tone: 'gold', label: 'Tests & drills', value: (state.tests || []).length, sub: `results · ${Object.keys(state.drills || {}).length} drills` },
+      { icon: 'mic', tone: 'info', label: 'Interview prep', value: Object.keys(ib.marks || {}).length, sub: `rated · ${(ib.mocks || []).length} mocks · ${state.sessions.length} rounds` },
+      { icon: 'code', tone: 'violet', label: 'Labs & code', value: Object.keys(state.workspaceDrafts).length, sub: `drafts · ${(state.submissions || []).length} submissions` },
+      { icon: 'route', tone: 'accent', label: 'Career roadmap', value: `${l.completed.length}<small>/${STAGES.length}</small>`, sub: `stages · ${state.days.length} active days` },
+      { icon: 'user', tone: '', label: 'Account', value: (typeof Profiles !== 'undefined' ? Profiles.all().length : 1), sub: 'profiles · no password' }
+    ];
+    const qa = (ic, q, a, extra) => `<details class="acc"><summary>${icon(ic)}<span>${q}</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">${a}${extra || ''}</div></details>`;
     root.innerHTML = `
-<section class="priv-hero" data-status="${status}">
-  <div class="priv-hero-art" aria-hidden="true"><span class="priv-shield">${icon('shield')}</span><span class="priv-orbit o1">${icon('lock', 'ic-sm')}</span><span class="priv-orbit o2">${icon('database', 'ic-sm')}</span><span class="priv-orbit o3">${icon('download', 'ic-sm')}</span></div>
-  <div class="priv-hero-copy">
-    <span class="eyebrow on-dark-eyebrow">${icon('shield', 'ic-sm')}${esc(t('settings.title'))}</span>
-    <h1>Your progress lives on this device — and nowhere else</h1>
-    <p>${esc(t('settings.sub'))} Everything below applies to the active learner profile “${esc(prof.name)}”.</p>
-    <div class="priv-status" role="status">${icon(statusIcon)}<b>${statusText}</b>${state.savedAt ? `<span>Last saved ${esc(fmtDate(state.savedAt))}</span>` : ''}</div>
-  </div>
-  <div class="priv-gauge">
-    <div class="ring" style="--size:150px">${ringSvg(pct, 150, 12)}<div class="ring-label"><b>${total != null ? fmtBytes(total) : '—'}</b><span>of ~5 MB</span></div></div>
-    <small>${total != null ? 'Counted as UTF-16 text. Browsers usually allow around 5 MB per site; the exact limit varies.' : 'Storage size is unavailable while storage is blocked.'}</small>
-  </div>
-</section>
-<div class="priv-promises">
-  <div class="card priv-promise"><span class="tile">${icon('database')}</span><b>Stored only here</b><p>This browser’s local storage for this site, on this device. Nothing is sent to a server and nothing syncs to other browsers or devices.</p></div>
-  <div class="card priv-promise"><span class="tile" data-tone="gold">${icon('key')}</span><b>No passwords kept</b><p>The demo password and real account details are never stored — not in progress data and not in backups.</p></div>
-  <div class="card priv-promise"><span class="tile" data-tone="info">${icon('sliders')}</span><b>You stay in control</b><p>Export a backup, restore one (older SQA Practice Room backups work too), or erase this profile’s data at any time.</p></div>
+<div class="page-head priv-head">
+  <div><span class="eyebrow">${icon('shield', 'ic-sm')}${esc(t('nav.groupYou'))}</span><h1>${esc(t('settings.title'))}</h1><p>Your progress is saved only in this browser — profile “${esc(prof.name)}”.</p></div>
+  <div class="priv-status" data-status="${status}" role="status">${icon(statusIcon, 'ic-sm')}<span>${statusText}</span></div>
 </div>
-<section class="card priv-flow">${flow}</section>
-<section class="card" aria-labelledby="pfDataH"><div class="card-title"><div><h2 id="pfDataH">${icon('database')} Manage your data</h2><p class="card-sub">Applies to the active learner profile “${esc(prof.name)}”.</p></div></div>
-  <div class="data-actions">
-    <div class="data-action"><span class="tile">${icon('download')}</span><h4>Export</h4><p>Download every practice record as a JSON file. It includes your notes and code, but never the password or sign-in session. Review it before sharing.</p><button class="btn btn-primary btn-sm" type="button" id="profileExport">${icon('download')}Export all practice data</button></div>
-    <div class="data-action"><span class="tile" data-tone="info">${icon('upload')}</span><h4>Import</h4><p>Restore a backup exported from this site (including older SQA Practice Room backups). You will see what it contains and confirm before anything is replaced.</p><button class="btn btn-secondary btn-sm" type="button" id="profileImport">${icon('upload')}Import a backup…</button><input type="file" id="profileImportFile" accept="application/json,.json" hidden></div>
-    <div class="data-action danger"><span class="tile" data-tone="danger">${icon('trash')}</span><h4>Reset</h4><p>Erase this profile’s practice records from this browser. You will be asked to confirm. Your demo sign-in and profile details stay.</p><button class="btn btn-danger btn-sm" type="button" id="profileReset">${icon('trash')}Erase local practice data…</button></div>
+<section class="card priv-summary" aria-label="Storage">
+  <div class="priv-meter">
+    <span class="tile">${icon('database')}</span>
+    <div><b class="tnum">${total != null ? fmtBytes(total) : '—'}</b><span>of ~5 MB used${state.savedAt ? ` · saved ${esc(fmtDate(state.savedAt))}` : ''}</span>${barHtml(pct, 'Browser storage used', 'bar-sm')}</div>
   </div>
-  <p class="data-status" id="dataStatus" role="status" aria-live="polite"></p>
-  <div class="data-error" id="dataError" role="alert"></div>
+  <ul class="priv-chips">
+    <li>${icon('monitor', 'ic-sm')}Only on this device</li>
+    <li>${icon('key', 'ic-sm')}No passwords stored</li>
+    <li>${icon('x-circle', 'ic-sm')}No sync or uploads</li>
+  </ul>
 </section>
-<div class="section-title"><div><h2>${icon('list')} Exactly what is saved</h2><p>Every record this site keeps, grouped by area, with what is stored right now.</p></div></div>
-<div class="priv-groups">${groups.map(g => `<section class="card priv-group" aria-label="${esc(g.title)}"><div class="card-title"><h3><span class="tile tile-sm"${g.tone ? ` data-tone="${g.tone}"` : ''}>${icon(g.icon)}</span>${esc(g.title)}</h3></div><ul>${g.rows.map(([a, , v]) => `<li><span>${esc(a)}</span><b>${v}</b></li>`).join('')}</ul></section>`).join('')}</div>
-<details class="acc priv-tech"><summary>${icon('terminal')}<span>Technical details: exact browser storage keys</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">
+<div class="data-actions" aria-label="Manage your data">
+  <div class="card data-action"><span class="tile">${icon('download')}</span><div><h2>Export</h2><p>Download a JSON backup. Never includes the password.</p></div><button class="btn btn-primary btn-sm" type="button" id="profileExport">${icon('download')}<span>Export data</span></button></div>
+  <div class="card data-action"><span class="tile" data-tone="info">${icon('upload')}</span><div><h2>Import</h2><p>Restore a backup. You confirm before anything changes.</p></div><button class="btn btn-secondary btn-sm" type="button" id="profileImport">${icon('upload')}<span>Import backup…</span></button><input type="file" id="profileImportFile" accept="application/json,.json" hidden></div>
+  <div class="card data-action danger"><span class="tile" data-tone="danger">${icon('trash')}</span><div><h2>Reset</h2><p>Erase this profile’s practice data from this browser.</p></div><button class="btn btn-danger btn-sm" type="button" id="profileReset">${icon('trash')}<span>Erase data…</span></button></div>
+</div>
+<p class="data-status" id="dataStatus" role="status" aria-live="polite"></p>
+<div class="data-error" id="dataError" role="alert"></div>
+<div class="section-title"><div><h2>What’s saved</h2></div></div>
+<div class="grid g-3 priv-tiles">${tiles.map(x => `<div class="card stat-card"><span class="tile"${x.tone ? ` data-tone="${x.tone}"` : ''}>${icon(x.icon)}</span><div><small class="priv-tile-label">${esc(x.label)}</small>${n(x.value)}<span>${x.sub}</span></div></div>`).join('')}</div>
+<details class="acc priv-tech"><summary>${icon('list')}<span>Full list of saved records and storage keys</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">
   <div class="tbl-wrap"><table class="tbl"><caption class="sr-only">Saved practice records, their storage key and current amount</caption><thead><tr><th scope="col">Record</th><th scope="col">Browser storage key</th><th scope="col">Now saved</th></tr></thead><tbody>
   ${groups.flatMap(g => g.rows).map(([a, k, v]) => `<tr><th scope="row">${esc(a)}</th><td><code>${esc(k)}</code></td><td>${v}</td></tr>`).join('')}
   </tbody></table></div>
   ${entries ? `<p class="help" style="margin-top:12px">Keys present now: ${entries.map(e => `<code>${esc(e.key)}</code> (${fmtBytes(e.bytes)})`).join(', ') || 'none'}.</p>` : ''}
 </div></details>
-<div class="section-title"><div><h2>${icon('help')} Privacy questions</h2></div></div>
+<div class="section-title"><div><h2>Questions</h2></div></div>
 <div class="accordion priv-faq">
-  <details class="acc"><summary>${icon('users')}<span>Who can see this data?</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">Signed in as Admin — the shared demo account. The login is a public demo gate, not secure authentication, so it does not make this data private: anyone who uses this browser profile — or signs in with the shared demo login on it — can open this practice data, including every learner profile on this device.</div></details>
-  <details class="acc"><summary>${icon('clock')}<span>How long does it last?</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">It stays in this browser until you erase it here or clear this site’s data in your browser settings. <b>Clearing browser site data deletes it permanently</b> unless you exported a backup. Private or incognito windows discard it when they close, and some browsers clear storage for sites you have not used for a while. Signing out keeps your practice data in this browser.</div></details>
-  <details class="acc"><summary>${icon('monitor')}<span>Can I use it on another device?</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">There is no sync. Export a backup here, move the file yourself, and import it in the other browser. Other browsers, devices and browser profiles will not see your data otherwise.</div></details>
-  <details class="acc"><summary>${icon('code')}<span>Is the code I write executed or sent anywhere?</span>${icon('chevron-down', 'chev')}</summary><div class="acc-body">No. Workspace code and answers are stored as drafts in this browser and reviewed with a transparent rubric. Nothing is executed and nothing is uploaded.</div></details>
-</div>
-<p class="source-note">Local-only storage is a deliberate choice for this open, frontend-only phase. Real accounts and cross-device sync need a backend, which is deferred to a later phase.</p>`;
+  ${qa('users', 'Who can see this data?', 'Anyone who uses this browser profile, including every learner profile on it. The Admin login is a shared public demo, not real security.')}
+  ${qa('clock', 'How long does it last?', 'Until you erase it here or <b>clear this site’s data</b> in your browser — that deletes it for good unless you exported a backup. Private windows discard it on close. Signing out keeps it.')}
+  ${qa('monitor', 'Can I use it on another device?', 'There is no sync. Export a backup here and import it on the other browser.')}
+  ${qa('code', 'Is my code run or uploaded?', 'No. Workspace code is saved as a draft in this browser and reviewed with a transparent rubric.')}
+  ${qa('route', 'How does my data flow?', 'No server, no analytics, no sync — the only copy you can make is an export.', `<div class="priv-flow">${flow}</div>`)}
+</div>`;
   }
   function dataStatus(msg) { const el = $('dataStatus'); if (el) el.textContent = msg; const er = $('dataError'); if (er) er.textContent = ''; }
   function dataError(msg) { const el = $('dataError'); if (el) el.textContent = msg; const ok = $('dataStatus'); if (ok) ok.textContent = ''; }

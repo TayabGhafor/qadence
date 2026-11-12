@@ -12,7 +12,7 @@
     learning: `${head('route', 'Career roadmap', 'Your 24-week SQA career roadmap', 'Eight self-paced stages from QA foundations to job applications, based on a two-part SQA career roadmap. Each stage guide links to labs, challenges and interview practice.', `<span class="badge badge-brand">${I('flag')}8 stages · self-paced</span>`)}
 <div id="learningOverview"></div><div id="lessonDetail" hidden></div>`,
 
-    challenges: `${head('trophy', 'Hands-on challenges', 'Challenge library', 'Pick a realistic scenario, explore the built-in target app, then submit your test cases, approach and automation draft for rubric feedback.', `<span class="badge badge-outline">${I('layers')}6 in-site scenarios</span>`)}
+    challenges: `${head('trophy', 'Hands-on challenges', 'Challenge library', 'Explore a built-in app, then submit tests for rubric feedback.', `<span class="badge badge-outline">${I('layers')}6 in-site scenarios</span>`)}
 <div class="challenge-filters card card-flat">
   ${field('challengeTrack', 'Track', '<select class="select" id="challengeTrack"><option value="all">All tracks</option><option>Manual QA</option><option>API testing</option><option>Web automation</option><option>Mobile testing</option></select>')}
   ${field('challengeLevel', 'Difficulty', '<select class="select" id="challengeLevel"><option value="all">All levels</option><option>Foundation</option><option>Intermediate</option><option>Advanced</option></select>')}
@@ -71,7 +71,7 @@
   </div>
 </div>`,
 
-    lab: `${head('flask', 'Practice labs', 'Testing playground', 'Six simulated apps with realistic UI, API, checkout and mobile failure paths. Everything runs locally — no data leaves this browser.', `<span class="badge badge-brand">${I('shield')}Safe sandbox · no data sent</span>`)}
+    lab: `${head('flask', 'Practice labs', 'Testing playground', 'Six simulated apps to test safely in your browser.', `<span class="badge badge-brand">${I('shield')}Safe sandbox · no data sent</span>`)}
 <div class="lab-tabs" role="tablist" aria-label="Testing playgrounds">
   <button class="lab-tab active" type="button" role="tab" aria-selected="true" aria-controls="lab-login" data-lab="login">${I('login')}<span><small>01</small>Login form</span></button>
   <button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-api" data-lab="api">${I('plug')}<span><small>02</small>API console</span></button>

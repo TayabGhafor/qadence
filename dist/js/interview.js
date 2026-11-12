@@ -43,7 +43,7 @@
   function renderTabs() {
     const { tabs } = ensureShell();
     const confident = Object.values(bankState().marks).filter(v => v === 'confident').length;
-    tabs.innerHTML = `<div class="page-head iv-head"><div><span class="eyebrow">${icon('mic', 'ic-sm')}${esc(t('nav.interview'))}</span><h1>${esc(t('iv.title'))}</h1><p>${BANK.length} of the most-asked interview questions with crisp answers, model answers, follow-ups and mistakes to avoid — plus scored practice rounds, flashcards and mock interviews.</p></div><div class="actions"><span class="badge badge-success">${icon('check-circle')}${esc(t('iv.confident', { n: confident }))}</span></div></div>
+    tabs.innerHTML = `<div class="page-head iv-head"><div><span class="eyebrow">${icon('mic', 'ic-sm')}${esc(t('nav.interview'))}</span><h1>${esc(t('iv.title'))}</h1><p>${BANK.length} most-asked questions with model answers, flashcards and mock interviews.</p></div><div class="actions"><span class="badge badge-success">${icon('check-circle')}${esc(t('iv.confident', { n: confident }))}</span></div></div>
       <div class="tabs iv-tabs" role="tablist" aria-label="Interview prep">${[['bank', 'list-checks', t('iv.tabBank')], ['flash', 'layers', t('iv.tabFlash')], ['mock', 'timer', t('iv.tabMock')], ['rounds', 'message', t('iv.tabRounds')]].map(([id, ic, label]) => `<button type="button" role="tab" data-iv-tab="${id}" aria-selected="${tab === id}">${icon(ic, 'ic-sm')}${esc(label)}</button>`).join('')}</div>`;
     tabs.querySelectorAll('[data-iv-tab]').forEach(b => b.addEventListener('click', () => showScreen('practice', { parts: b.dataset.ivTab === 'bank' ? [] : [b.dataset.ivTab], replace: true, keepScroll: true })));
   }

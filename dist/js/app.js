@@ -286,7 +286,7 @@ ${resume}
       <div class="field"><label for="pfName">${esc(t('prof.name'))}</label><input class="input" id="pfName" maxlength="40" value="${esc(p.name || name)}" required></div>
       <div class="field"><label for="pfRole">${esc(t('prof.role'))}</label><select class="select" id="pfRole"><option value="">${esc(t('ob.choose'))}</option>${ROLES.map(r => `<option${p.role === r ? ' selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
       <div class="field span-2"><span class="label" id="pfLvlL">${esc(t('prof.levelSelf'))}</span><div class="seg" role="group" aria-labelledby="pfLvlL">${LEVELS.map(lv => `<button type="button" data-pf-level="${lv}" aria-pressed="${(p.level || 'beginner') === lv}">${icon(LEVEL_ICON[lv], 'ic-sm')}${esc(t('lvl.' + lv))}</button>`).join('')}</div></div>
-      <div class="field"><label for="pfGoal">${esc(t('prof.goal'))}</label><input class="input" id="pfGoal" type="number" min="1" max="21" value="${p.goal || 4}"><span class="help">Lessons per week. Small and steady beats big and rare.</span></div>
+      <div class="field"><label for="pfGoal">${esc(t('prof.goal'))}</label><input class="input" id="pfGoal" type="number" min="1" max="21" value="${p.goal || 4}"><span class="help">Lessons per week.</span></div>
       <div class="field"><span class="label" id="pfColL">${esc(t('prof.avatar'))}</span><div class="swatches" role="radiogroup" aria-labelledby="pfColL">${AVATAR_COLORS.map(c => `<button type="button" role="radio" class="swatch" style="--sw:${c}" data-color="${c}" aria-checked="${c === color}" aria-label="Colour ${c}"></button>`).join('')}</div></div>
       <div class="field span-2"><label for="pfBio">${esc(t('prof.bio'))}</label><textarea class="textarea" id="pfBio" maxlength="400" rows="3" placeholder="Your goals, current role, what you are learning…">${esc(p.bio || '')}</textarea></div>
       <div class="span-2 row"><button class="btn btn-primary" type="submit">${icon('save')}${esc(t('common.save'))}</button><span class="help" id="pfStatus" role="status"></span></div>
@@ -295,14 +295,14 @@ ${resume}
   <section class="card" aria-labelledby="pfPrefH">
     <div class="card-title"><h2 id="pfPrefH">${icon('sliders')} Preferences</h2></div>
     <div class="stack">
-      <div class="field"><label for="pfLang">${esc(t('prof.language'))}</label><select class="select" id="pfLang">${QA_I18N.langs.map(l => `<option value="${l.code}"${l.code === QA_I18N.lang ? ' selected' : ''}>${esc(l.native)} — ${esc(l.name)}</option>`).join('')}</select><span class="help">English stays the primary language for lessons and tests; the interface and simple explanations switch.</span></div>
+      <div class="field"><label for="pfLang">${esc(t('prof.language'))}</label><select class="select" id="pfLang">${QA_I18N.langs.map(l => `<option value="${l.code}"${l.code === QA_I18N.lang ? ' selected' : ''}>${esc(l.native)} — ${esc(l.name)}</option>`).join('')}</select><span class="help">Lessons stay in English; menus and simple explanations switch.</span></div>
       <div class="field"><span class="label" id="pfThemeL">${esc(t('prof.theme'))}</span><div class="seg" role="group" aria-labelledby="pfThemeL">${[['light', 'sun', 'prof.themeLight'], ['dark', 'moon', 'prof.themeDark'], ['system', 'monitor', 'prof.themeSystem']].map(([v, ic, k]) => `<button type="button" data-theme-set="${v}" aria-pressed="${(prefs.theme || 'system') === v}">${icon(ic, 'ic-sm')}${esc(t(k))}</button>`).join('')}</div></div>
     </div>
     <hr class="divider">
     <div class="card-title"><h3>${icon('users')} ${esc(t('prof.profiles'))}</h3></div>
     <div class="stack" id="profileList">${Profiles.all().map(x => `<div class="profile-row"><span class="avatar avatar-sm" style="--av-bg:${x.id === PROFILES.active ? color : x.color}">${esc(initials(x.id === PROFILES.active ? name : x.name))}</span><span class="pr-name"><b>${esc(x.id === PROFILES.active ? name : x.name)}</b><small>${x.id === 'default' ? 'Original profile' : 'Added ' + esc(new Date(x.createdAt).toLocaleDateString())}</small></span>${x.id === PROFILES.active ? `<span class="badge badge-brand">${icon('check')}${esc(t('prof.active'))}</span>` : `<button class="btn btn-secondary btn-sm" type="button" data-switch-profile="${x.id}">${esc(t('prof.switch'))}</button>${x.id !== 'default' ? `<button class="icon-btn" type="button" data-delete-profile="${x.id}" aria-label="Delete profile ${esc(x.name)}">${icon('trash')}</button>` : ''}`}</div>`).join('')}</div>
     <form class="row add-profile" id="addProfileForm"><label class="sr-only" for="newProfileName">New profile name</label><input class="input" id="newProfileName" maxlength="40" placeholder="New learner’s name" required><button class="btn btn-soft" type="submit">${icon('plus')}${esc(t('prof.addProfile'))}</button></form>
-    <p class="help" style="margin-top:8px">Each profile keeps separate progress in this browser — handy for a shared computer. Profiles are not passwords: anyone using this browser can open them.</p>
+    <p class="help" style="margin-top:8px">Separate progress per person on this browser. Not password-protected.</p>
   </section>
 </div>
 <section class="card" aria-labelledby="pfBadgesH" style="margin-top:18px">
@@ -387,7 +387,7 @@ ${resume}
 <section class="card" aria-labelledby="pgHistH" style="margin-top:18px"><div class="card-title"><h2 id="pgHistH">${esc(t('tests.history'))}</h2><small class="muted">${tests.length} tests</small></div>
   ${tests.length ? `<div class="tbl-wrap"><table class="tbl"><caption class="sr-only">Test history</caption><thead><tr><th scope="col">Test</th><th scope="col">Date</th><th scope="col">Score</th><th scope="col">Time</th><th scope="col"><span class="sr-only">Review</span></th></tr></thead><tbody>${tests.slice(0, 25).map(r => `<tr><th scope="row">${esc(r.title)}</th><td>${esc(new Date(r.date).toLocaleDateString())}</td><td><span class="score-pill ${r.score >= 70 ? 'good' : r.score >= 50 ? 'mid' : 'low'}">${r.score}%</span> <small class="muted">${r.correct}/${r.total}</small></td><td class="tnum">${r.seconds ? fmtDuration(r.seconds) : '—'}</td><td><button class="link-btn" type="button" data-go="tests/result/${encodeURIComponent(r.id)}">${esc(t('common.review'))}</button></td></tr>`).join('')}</tbody></table></div>` : `<p class="muted">No tests yet.</p>`}
 </section>
-<div class="section-title"><div><h2>Practice history</h2><p>Interview rounds, challenge submissions and roadmap stages.</p></div></div>`;
+<div class="section-title"><div><h2>Practice history</h2></div></div>`;
     $id('exportBtn2')?.addEventListener('click', () => window.exportPracticeData && window.exportPracticeData());
     try { renderHistory(); renderChallengeProgress(); } catch (e) { console.error(e); }
   }
