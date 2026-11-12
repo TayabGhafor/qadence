@@ -23,7 +23,7 @@ Content totals: 80 lessons · 542 MCQs (400 lesson checks + 142 test-bank questi
 
 ## Run locally
 
-Open `dist/index.html` in a modern browser. No build step or server is required — every script is a classic script file, fonts are bundled, and the page makes no external requests. The landing page paints first; a small loader at the end of `index.html` then loads the app scripts in order.
+Open `dist/index.html` in a modern browser. No build step or server is required — every script is a classic script file, fonts are bundled, and the page makes no external requests (a `connect-src 'none'` Content-Security-Policy enforces this, including inside the code runner). The landing page paints first; a small loader at the end of `index.html` then loads the app scripts in order.
 
 ## Demo login
 

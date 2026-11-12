@@ -11,7 +11,8 @@ const ok = (name, pass, info = '') => { results.push(pass); console.log(`${pass 
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
-  page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+  // The blocked-network checks below trigger CSP violation reports on purpose (Firefox logs them as errors).
+  page.on('console', m => { if (m.type() === 'error' && !/Content-Security-Policy.*connect-src/.test(m.text())) errors.push('console: ' + m.text()); });
   page.on('dialog', d => { errors.push('native dialog'); d.dismiss(); });
   const booted = () => page.waitForFunction(() => !!window.QadenceApp, null, { timeout: 15000 });
 
@@ -70,6 +71,15 @@ const ok = (name, pass, info = '') => { results.push(pass); console.log(`${pass 
   r = await runAndWait();
   const net = await page.textContent('#ideConsole');
   ok('fetch and XMLHttpRequest are blocked', /blocked: fetch is disabled/.test(net) && /xhr blocked/.test(net) && !/reached the network/.test(net));
+
+  // 6b. forged worker messages cannot inject HTML; other network routes are closed too
+  await setCode(`postMessage({ type: 'collected', tests: [{ id: '"><img src=x onerror="window.__pwn=1">', title: '<img src=x onerror="window.__pwn=2">' }] });\npostMessage({ type: 'testEnd', id: 0, status: 'x"><img src=x onerror="window.__pwn=3">', error: { message: '<img src=x onerror="window.__pwn=4">', line: '"><img src=x onerror="window.__pwn=5">' } });\npostMessage({ type: 'log', level: 'x"><img src=x onerror="window.__pwn=6">', text: '<img src=x onerror="window.__pwn=7">' });\npostMessage({ type: 'cmd', id: 1, cmd: 'constructor', args: {} });\npostMessage({ type: 'done', ms: 'x', error: { message: 'forged', line: '<img src=x onerror="window.__pwn=8">' } });\n`);
+  await runAndWait();
+  await page.waitForTimeout(300);
+  ok('forged worker messages are rendered inert', await page.$$eval('#ideTests img, #ideConsole img', e => e.length) === 0 && !(await page.evaluate(() => window.__pwn)));
+  await setCode(`try { const c = await caches.open('q'); await c.add('https://example.com/'); console.log('cache fetched'); } catch (e) { console.log('cache blocked'); }`);
+  await runAndWait();
+  ok('Cache API cannot reach the network either', /cache blocked/.test(await page.textContent('#ideConsole')) && !/cache fetched/.test(await page.textContent('#ideConsole')));
 
   // 7. infinite loop is stopped and the next run still works
   await setCode(`console.log('start');\nwhile (true) {}\n`);

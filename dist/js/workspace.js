@@ -320,7 +320,7 @@
     const passed = list.filter(t => t.status === 'passed').length, failed = list.filter(t => t.status === 'failed').length, skipped = list.filter(t => t.status === 'skipped').length;
     const sum = r.done ? `<div class="tr-sum ${failed || r.error ? 'is-fail' : 'is-pass'}"><span class="tr-pill pass">${icon('check-circle', 'ic-xs')}${passed} passed</span>${failed ? `<span class="tr-pill fail">${icon('x-circle', 'ic-xs')}${failed} failed</span>` : ''}${skipped ? `<span class="tr-pill skip">${skipped} skipped</span>` : ''}<span class="tr-time">${fmtMs(r.ms)}</span></div>`
       : `<div class="tr-sum is-run"><span class="ide-spin" aria-hidden="true"></span><span>Running ${list.length ? list.length + ' test' + (list.length === 1 ? '' : 's') : 'your code'}…</span></div>`;
-    const errBlock = (e, cls) => e ? `<div class="tr-err${cls ? ' ' + cls : ''}"><pre>${esc(e.message)}</pre>${e.line ? `<button type="button" class="ide-link" data-goto-line="${e.line}">${icon('arrow-right', 'ic-xs flip-rtl')}<span>Go to line ${e.line}</span></button>` : ''}</div>` : '';
+    const errBlock = (e, cls) => e ? `<div class="tr-err${cls ? ' ' + cls : ''}"><pre>${esc(e.message)}</pre>${e.line ? `<button type="button" class="ide-link" data-goto-line="${num(e.line)}">${icon('arrow-right', 'ic-xs flip-rtl')}<span>Go to line ${num(e.line)}</span></button>` : ''}</div>` : '';
     let body = '';
     if (r.compileError) body = `<div class="tr-err is-top"><b>Your code could not start</b><pre>${esc(r.compileError.message)}</pre>${r.compileError.ts ? '<p>This looks like TypeScript type syntax. The browser runner executes JavaScript — remove type annotations such as <code>: Page</code> and run again.</p>' : ''}</div>`;
     else if (r.plain) body = r.error ? errBlock(r.error, 'is-top') : `<div class="tr-plain">${icon('check-circle', 'ic-sm')}<span>Ran without errors in ${fmtMs(r.ms)}. No tests were defined — see <button type="button" class="ide-link" data-show-output>Output</button> for console logs.</span></div>`;
@@ -328,7 +328,7 @@
       if (r.error) body += errBlock(r.error, 'is-top');
       body += `<ol class="tr-list">${list.map(t => {
         const open = t.open != null ? t.open : t.status === 'failed';
-        return `<li class="tr-test is-${t.status}"><button type="button" class="tr-head" data-tid="${t.id}" aria-expanded="${open}"><span class="tr-ic">${t.status === 'running' ? '<span class="ide-spin" aria-hidden="true"></span>' : icon(ICON[t.status] || 'circle', 'ic-sm')}</span><span class="tr-name">${esc(t.title)}</span>${t.status === 'passed' && !t.assertions ? `<span class="tr-flag">${icon('alert', 'ic-xs')}no assertions</span>` : ''}<span class="tr-ms">${t.ms != null ? fmtMs(t.ms) : ''}</span>${t.steps.length ? icon('chevron-down', 'ic-xs tr-chev') : ''}</button>
+        return `<li class="tr-test is-${STATUS.has(t.status) || t.status === 'running' || t.status === 'pending' ? t.status : 'failed'}"><button type="button" class="tr-head" data-tid="${num(t.id)}" aria-expanded="${open}"><span class="tr-ic">${t.status === 'running' ? '<span class="ide-spin" aria-hidden="true"></span>' : icon(ICON[t.status] || 'circle', 'ic-sm')}</span><span class="tr-name">${esc(t.title)}</span>${t.status === 'passed' && !t.assertions ? `<span class="tr-flag">${icon('alert', 'ic-xs')}no assertions</span>` : ''}<span class="tr-ms">${t.ms != null ? fmtMs(t.ms) : ''}</span>${t.steps.length ? icon('chevron-down', 'ic-xs tr-chev') : ''}</button>
           <div class="tr-detail"${open ? '' : ' hidden'}>${t.steps.length ? `<ol class="tr-steps">${t.steps.map(s => `<li class="${s.ok ? 'ok' : 'bad'}">${icon(s.ok ? 'check' : 'x', 'ic-xs')}<code>${esc(s.title)}</code><span class="tr-ms">${fmtMs(s.ms)}</span></li>`).join('')}</ol>` : ''}${errBlock(t.error)}${t.status === 'passed' && !t.assertions ? '<p class="tr-warn">Passed, but no assertions ran — add an expect() so the test can actually fail.</p>' : ''}</div></li>`;
       }).join('')}</ol>`;
     }
@@ -956,27 +956,38 @@
     worker.postMessage({ type: 'run', code, api: apiResponse() });
     arm(12000);
   }
+  /* Messages from the worker are untrusted (user code can call postMessage itself):
+     every field is coerced before it reaches the DOM or the driver. */
+  const num = v => (Number.isFinite(+v) ? +v : 0);
+  const str = (v, max) => String(v == null ? '' : v).slice(0, max || 4000);
+  const STATUS = new Set(['passed', 'failed', 'skipped']);
+  const LEVELS = new Set(['log', 'info', 'warn', 'error']);
+  const cleanErr = e => (e && typeof e === 'object' ? { message: str(e.message), line: Math.max(0, Math.floor(num(e.line))) } : null);
   function onMsg(id, m) {
-    if (id !== runId || !results) return;
+    if (id !== runId || !results || !m || typeof m !== 'object') return;
     const r = results;
     if (m.type === 'cmd') {
-      const fn = driver[m.cmd];
-      Promise.resolve(fn ? fn(m.args || {}) : Promise.reject(new Error('Unknown command ' + m.cmd)))
+      const cmd = str(m.cmd, 40), fn = Object.prototype.hasOwnProperty.call(driver, cmd) ? driver[cmd] : null, args = m.args && typeof m.args === 'object' ? m.args : {};
+      Promise.resolve(fn ? fn(args) : Promise.reject(new Error('Unknown command')))
         .then(value => { if (worker && id === runId) worker.postMessage({ type: 'reply', id: m.id, value }); },
-          err => { if (worker && id === runId) worker.postMessage({ type: 'reply', id: m.id, error: (err && err.message) || String(err) }); });
+          err => { if (worker && id === runId) worker.postMessage({ type: 'reply', id: m.id, error: str((err && err.message) || err) }); });
       return;
     }
-    if (m.type === 'log') { log(m.level, m.text); return; }
+    if (m.type === 'log') { log(LEVELS.has(m.level) ? m.level : 'log', str(m.text, 20000)); return; }
     if (m.type === 'clear') { $('ideConsole').innerHTML = ''; return; }
-    if (m.type === 'collected') { r.tests = m.tests.map(t => ({ id: t.id, title: t.title, status: t.skip ? 'skipped' : 'pending', steps: [], ms: null })); renderResults(); return; }
-    const t = r.tests.find(x => x.id === m.id);
+    if (m.type === 'collected') {
+      r.tests = (Array.isArray(m.tests) ? m.tests.slice(0, 500) : []).map(t => ({ id: num(t && t.id), title: str(t && t.title, 300), status: t && t.skip ? 'skipped' : 'pending', steps: [], ms: null }));
+      renderResults(); return;
+    }
+    const t = r.tests.find(x => x.id === num(m.id));
     if (m.type === 'testStart' && t) { t.status = 'running'; renderTargetApp(); setUrl('/'); arm(12000); renderResults(); return; }
-    if (m.type === 'step' && t) { t.steps.push({ title: m.title, ok: m.ok, ms: m.ms }); renderResults(); return; }
-    if (m.type === 'testEnd' && t) { Object.assign(t, { status: m.status, ms: m.ms, error: m.error || null, assertions: m.assertions || 0 }); renderResults(); return; }
+    if (m.type === 'step' && t) { if (t.steps.length < 300) t.steps.push({ title: str(m.title, 400), ok: !!m.ok, ms: num(m.ms) }); renderResults(); return; }
+    if (m.type === 'testEnd' && t) { Object.assign(t, { status: STATUS.has(m.status) ? m.status : 'failed', ms: num(m.ms), error: cleanErr(m.error), assertions: num(m.assertions) }); renderResults(); return; }
     if (m.type === 'done') {
-      Object.assign(r, { done: true, ms: m.ms, plain: !!m.plain, error: m.error || null, compileError: m.compileError || null });
-      if (m.compileError) log('error', m.compileError.message);
-      else if (m.error) log('error', m.error.message + (m.error.line ? `  (line ${m.error.line})` : ''));
+      const ce = m.compileError && typeof m.compileError === 'object' ? { message: str(m.compileError.message), ts: !!m.compileError.ts } : null;
+      Object.assign(r, { done: true, ms: num(m.ms), plain: !!m.plain, error: cleanErr(m.error), compileError: ce });
+      if (ce) log('error', ce.message);
+      else if (r.error) log('error', r.error.message + (r.error.line ? `  (line ${r.error.line})` : ''));
       stopRun(true); renderResults(); finishRun();
     }
   }
