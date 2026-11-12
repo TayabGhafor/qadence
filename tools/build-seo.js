@@ -77,7 +77,8 @@ function collect() {
 
   /* Interview topic names live in js/interview.js (CATS); fall back to the category id. */
   const ivSrc = read('js/interview.js');
-  const ivNames = Object.fromEntries([...ivSrc.matchAll(/\['([a-z]+)', '[a-z0-9-]+', '([^']+)'\]/g)].map(m => [m[1], m[2]]));
+  const catsSrc = (ivSrc.match(/const CATS = \[([\s\S]*?)\]\.filter\(/) || [, ''])[1];   // only the CATS array literal
+  const ivNames = Object.fromEntries([...catsSrc.matchAll(/\['([a-z]+)', '[a-z0-9-]+', '([^']+)'\]/g)].map(m => [m[1], m[2]]));
   const ivCats = [];
   C.interview.forEach(q => { let c = ivCats.find(x => x.id === q.cat); if (!c) ivCats.push(c = { id: q.cat, name: ivNames[q.cat] || q.cat, n: 0 }); c.n++; });
   const ivOrder = Object.keys(ivNames); ivCats.sort((a, b) => ivOrder.indexOf(a.id) - ivOrder.indexOf(b.id));
