@@ -725,3 +725,4 @@
   .ladder-step > :not(.ladder-icon) { grid-column: 2; }
   .ladder-step p { -webkit-line-clamp: 2; }
 }
+@media (max-width: 600px) { .badge-grid, .badge-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
