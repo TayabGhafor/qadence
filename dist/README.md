@@ -67,7 +67,9 @@ tools/
                         curriculum in index.html, plus llms.txt, sitemap, robots, manifest and 404 page.
                         Site URL lives in its SITE_URL constant. `--check` fails if anything is stale.
   og-image.html, render-images.js   social card and app icons (needs playwright-core locally)
+  render-guide.js       renders docs/seo-setup-guide.html to docs/SEO-Setup-Guide.pdf (needs playwright-core locally)
   e2e/                  browser checks (regression smoke + feature suite) — see tools/e2e/README.md
+docs/SEO-Setup-Guide.pdf      step-by-step guide: Google Search Console and an optional custom domain
 .github/workflows/pages.yml   validates content and SEO files, then deploys dist/ to GitHub Pages
 ```
 
@@ -75,7 +77,7 @@ tools/
 
 Every push to `main` runs `.github/workflows/pages.yml`: it validates the content, checks that the generated SEO files are current and publishes `dist/` to GitHub Pages. After changing lessons, counts or the FAQ, run `node tools/build-seo.js` and commit the result.
 
-The landing page is the only crawlable page (the app uses `#/…` routes behind the demo login), so it carries the search and answer-engine work: a descriptive title and meta description, canonical URL, Open Graph/Twitter card, JSON-LD (`WebSite`, `Organization`, `WebApplication`, `Course`, `FAQPage` matching the visible FAQ), pre-rendered curriculum and counts, and `llms.txt` for AI assistants. On a GitHub Pages project site, crawlers only read `robots.txt` at the domain root, so submit `sitemap.xml` in Google Search Console (or move to a custom domain).
+The landing page is the only crawlable page (the app uses `#/…` routes behind the demo login), so it carries the search and answer-engine work: a descriptive title and meta description, canonical URL, Open Graph/Twitter card, JSON-LD (`WebSite`, `Organization`, `WebApplication`, `Course`, `FAQPage` matching the visible FAQ), pre-rendered curriculum and counts, and `llms.txt` for AI assistants. On a GitHub Pages project site, crawlers only read `robots.txt` at the domain root, so submit `sitemap.xml` in Google Search Console (or move to a custom domain) — see [docs/SEO-Setup-Guide.pdf](docs/SEO-Setup-Guide.pdf).
 
 ## Open source
 

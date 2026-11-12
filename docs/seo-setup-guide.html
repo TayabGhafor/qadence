@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Qadence — Search Console &amp; Custom Domain Guide</title>
+<!-- Source of docs/SEO-Setup-Guide.pdf. Rebuild: node tools/render-guide.js (needs playwright-core). -->
+<style>
+  @font-face { font-family: 'Jakarta'; font-weight: 400 800; src: url(../dist/assets/fonts/plus-jakarta-sans-latin.woff2) format('woff2'); }
+  @font-face { font-family: 'Mono'; font-weight: 400 600; src: url(../dist/assets/fonts/jetbrains-mono-latin.woff2) format('woff2'); }
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root {
+    --ink: #0E1B1A; --text: #22302E; --muted: #5B6B68; --line: #DCE5E3; --soft: #F3F7F6;
+    --brand: #0F766E; --brand-2: #14B8A6; --brand-soft: #E6F4F2;
+    --gold: #8A4B06; --gold-soft: #FEF3C7; --warn: #9A3412; --warn-soft: #FFF1E7; --info: #1A43B8; --info-soft: #EAF0FE;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font: 400 10.4pt/1.55 'Jakarta', system-ui, sans-serif; color: var(--text); word-spacing: .06em; }
+  h1, h2, h3, h4 { color: var(--ink); margin: 0; letter-spacing: -.005em; line-height: 1.25; word-spacing: .08em; }
+  p { margin: 0 0 7px; }
+  a { color: var(--brand); text-decoration: none; font-weight: 600; }
+  code, .mono { font-family: 'Mono', ui-monospace, monospace; font-size: 8.9pt; word-spacing: 0; }
+  code { background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; color: var(--ink); white-space: nowrap; }
+  b, strong { color: var(--ink); font-weight: 700; word-spacing: .08em; }
+  .ui { font-weight: 700; color: var(--ink); background: #EEF2F1; border-radius: 4px; padding: 0 4px; white-space: nowrap; }
+
+  /* cover */
+  .cover { border-radius: 16px; padding: 26px 28px 24px; color: #EAF5F2; background: linear-gradient(140deg, #0B1A18 0%, #10302B 60%, #0E3F38 100%); position: relative; overflow: hidden; margin-bottom: 16px; }
+  .cover::after { content: ""; position: absolute; width: 360px; height: 360px; right: -120px; top: -160px; background: radial-gradient(closest-side, rgba(45,212,191,.28), transparent); }
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .brand svg { width: 34px; height: 34px; }
+  .brand span { font-weight: 800; font-size: 17pt; letter-spacing: -.04em; color: #fff; }
+  .cover h1 { color: #fff; font-size: 23pt; letter-spacing: -.035em; max-width: 520px; }
+  .cover h1 em { font-style: normal; color: #5EEAD4; }
+  .cover p.lead { color: #B6CFCA; font-size: 11pt; margin: 10px 0 0; max-width: 560px; }
+  .cover .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .cover .meta span { font-size: 8.6pt; font-weight: 650; padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: #D7E8E4; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; background: #fff; break-inside: avoid; }
+  .card h3 { font-size: 11.5pt; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .num-tag { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--brand); color: #fff; font-size: 9pt; font-weight: 800; }
+  .card.part2 .num-tag { background: #6D28D9; }
+  .card ul, .plain { margin: 4px 0 0; padding-left: 17px; }
+  .card li, .plain li { margin: 2px 0; }
+  .facts { width: 100%; border-collapse: collapse; font-size: 9.4pt; }
+  .facts th { text-align: left; color: var(--muted); font-weight: 650; width: 132px; padding: 5px 8px 5px 0; vertical-align: top; }
+  .facts td { padding: 5px 0; border-bottom: 1px dashed var(--line); }
+  .facts tr:last-child td { border: 0; }
+
+  .callout { display: grid; grid-template-columns: 22px 1fr; gap: 8px; border-radius: 10px; padding: 9px 12px; margin: 8px 0; font-size: 9.6pt; break-inside: avoid; }
+  .callout .ico { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-weight: 800; font-size: 10pt; }
+  .callout p:last-child { margin: 0; }
+  .tip { background: var(--brand-soft); } .tip .ico { background: var(--brand); color: #fff; }
+  .warn { background: var(--warn-soft); } .warn .ico { background: var(--warn); color: #fff; }
+  .note { background: var(--info-soft); } .note .ico { background: var(--info); color: #fff; }
+  .decide { background: var(--gold-soft); } .decide .ico { background: var(--gold); color: #fff; }
+
+  /* parts */
+  .part { break-before: page; }
+  .part-head { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; background: var(--soft); border: 1px solid var(--line); margin-bottom: 12px; }
+  .part-head .big { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; font-size: 18pt; color: #fff; background: linear-gradient(135deg, #14B8A6, #0F766E); flex: none; }
+  .part2-head .big { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
+  .part-head h2 { font-size: 16pt; }
+  .part-head p { margin: 2px 0 0; color: var(--muted); font-size: 9.6pt; }
+  .pill { display: inline-block; font-size: 8.4pt; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: #fff; border: 1px solid var(--line); color: var(--text); margin-right: 4px; }
+
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 10px 0 9px; border-bottom: 1px solid var(--line); break-inside: avoid; }
+  .step:last-of-type { border-bottom: 0; }
+  .step .n { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; color: var(--brand); background: var(--brand-soft); border: 1px solid #BFE3DE; font-size: 11pt; }
+  .part2 .step .n { color: #5B21B6; background: #F1EBFE; border-color: #DDD0FB; }
+  .step h3 { font-size: 11.6pt; margin: 4px 0 5px; }
+  .step ol, .step ul { margin: 3px 0 4px; padding-left: 18px; }
+  .step li { margin: 2.5px 0; }
+  pre { margin: 6px 0 6px; padding: 9px 12px; border-radius: 9px; background: #0F1F1D; color: #D8EFEA; font: 8.7pt/1.6 'Mono', monospace; white-space: pre-wrap; word-break: break-word; break-inside: avoid; }
+  pre .c { color: #7FA39C; }
+  .expect { font-size: 9.3pt; color: var(--muted); margin-top: 3px; }
+  .expect b { color: var(--brand); }
+
+  table.dns { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 9.2pt; break-inside: avoid; }
+  table.dns th { text-align: left; background: var(--soft); color: var(--muted); font-weight: 700; font-size: 8.4pt; text-transform: uppercase; letter-spacing: .04em; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  table.dns td { padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.dns td.mono { white-space: nowrap; }
+
+  .check { border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; margin-top: 12px; break-inside: avoid; background: #fff; }
+  .check h4 { font-size: 10.6pt; margin-bottom: 6px; }
+  .check ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 18px; }
+  .check li { position: relative; padding-left: 21px; margin: 3px 0; break-inside: avoid; font-size: 9.5pt; }
+  .check li::before { content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px; border: 1.6px solid var(--brand); border-radius: 3px; }
+
+  table.trouble { width: 100%; border-collapse: collapse; font-size: 9.3pt; }
+  table.trouble th { text-align: left; background: var(--soft); padding: 7px 9px; font-size: 8.6pt; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 1px solid var(--line); }
+  table.trouble td { padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.trouble td:first-child { font-weight: 700; color: var(--ink); width: 36%; }
+  table.trouble tr { break-inside: avoid; }
+  h2.sec { font-size: 15pt; margin: 4px 0 10px; }
+  .small { font-size: 8.8pt; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ───────────── Overview ───────────── -->
+<section class="cover">
+  <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1E4A44"/><stop offset="1" stop-color="#0A1514"/></linearGradient></defs><rect width="48" height="48" rx="14" fill="url(#tile)"/><g transform="translate(-1.5 1.5)" fill="none" stroke-linecap="round" stroke-width="4.4"><path d="M30.5 32.6A11.5 11.5 0 1 1 35.3 22.4" stroke="#fff"/><path d="M24 27.5l4.6 4.6 10.4-10.4" stroke="#2DD4BF" stroke-linejoin="round"/></g></svg><span>qadence</span></div>
+  <h1>Finish the SEO setup: <em>Search Console</em> and a <em>custom domain</em></h1>
+  <p class="lead">Two manual tasks only you can do — they need your Google account, your domain registrar and your GitHub login. Everything else (tags, structured data, sitemap, llms.txt, deploys) is already live.</p>
+  <div class="meta"><span>Part 1 · Google Search Console · ~20 min</span><span>Part 2 · Custom domain · optional · ~30 min + DNS wait</span><span>Updated 12 November 2026</span></div>
+</section>
+
+<div class="grid2">
+  <div class="card">
+    <h3><span class="num-tag">1</span>Google Search Console</h3>
+    <p>Proves to Google that you own the site, hands it your sitemap and asks it to index the homepage.</p>
+    <p class="small"><b>Why you need it:</b> on a GitHub Pages project site, the site lives in a sub-folder (<code>/qadence/</code>). Crawlers only look for <code>robots.txt</code> at the domain root, so they never see the sitemap link — submitting it here fixes that.</p>
+  </div>
+  <div class="card part2">
+    <h3><span class="num-tag">2</span>Custom domain <span class="pill">optional</span></h3>
+    <p>Moves the site to your own address, e.g. <code>www.qadence.dev</code>. Costs a yearly domain fee; GitHub Pages hosting stays free.</p>
+    <p class="small"><b>What you gain:</b> <code>robots.txt</code> and <code>llms.txt</code> sit at the domain root where search engines and AI crawlers look automatically, a short memorable URL, and a full "Domain" property in Search Console.</p>
+  </div>
+</div>
+
+<div class="callout decide"><span class="ico">?</span><div>
+  <p><b>Which order?</b> If you plan to buy a domain in the next few weeks, do <b>Part 2 first</b>, then follow Part 1 with the new domain (step 8 of Part 2 tells you how) — so you only verify once. Otherwise do <b>Part 1 now</b>; it keeps working, and you add the new domain later.</p>
+</div></div>
+
+<div class="card" style="margin-top:10px">
+  <h3>Your site at a glance</h3>
+  <table class="facts">
+    <tr><th>Live site</th><td><a href="https://tayabghafor.github.io/qadence/">https://tayabghafor.github.io/qadence/</a></td></tr>
+    <tr><th>Sitemap</th><td><a href="https://tayabghafor.github.io/qadence/sitemap.xml">https://tayabghafor.github.io/qadence/sitemap.xml</a></td></tr>
+    <tr><th>Repository</th><td><a href="https://github.com/TayabGhafor/qadence">https://github.com/TayabGhafor/qadence</a> (GitHub account <b>TayabGhafor</b>)</td></tr>
+    <tr><th>Deploy status</th><td><a href="https://github.com/TayabGhafor/qadence/actions">https://github.com/TayabGhafor/qadence/actions</a> — every push to <code>main</code> deploys in about a minute</td></tr>
+    <tr><th>Folder that is published</th><td><code>dist/</code> inside the project folder <code>sqa-interview-practice</code></td></tr>
+  </table>
+</div>
+
+<div class="card" style="margin-top:10px">
+  <h3>Before you start</h3>
+  <ul class="plain">
+    <li>A Google account you will keep using (Search Console access is tied to it).</li>
+    <li>The project folder on this computer and a terminal — or Claude Code, which can do the file and git steps for you.</li>
+    <li>For Part 2: a domain (or the budget to buy one) and the login for its DNS settings.</li>
+  </ul>
+</div>
+
+<!-- ───────────── Part 1 ───────────── -->
+<section class="part">
+  <div class="part-head">
+    <span class="big">1</span>
+    <div><h2>Google Search Console</h2><p><span class="pill">~20 minutes</span><span class="pill">free</span> Indexing itself then takes a few days to a couple of weeks.</p></div>
+  </div>
+
+  <div class="step"><span class="n">1</span><div>
+    <h3>Add your site as a "URL prefix" property</h3>
+    <ol>
+      <li>Open <a href="https://search.google.com/search-console">search.google.com/search-console</a> and sign in.</li>
+      <li>Open the property menu at the top left and choose <span class="ui">Add property</span>.</li>
+      <li>Use the <b>right-hand box, <span class="ui">URL prefix</span></b> — not "Domain". (A Domain property needs DNS records, and you can't add those to <code>github.io</code>.)</li>
+      <li>Type the address exactly, with the trailing slash: <code>https://tayabghafor.github.io/qadence/</code> → <span class="ui">Continue</span>.</li>
+    </ol>
+  </div></div>
+
+  <div class="step"><span class="n">2</span><div>
+    <h3>Download the HTML verification file</h3>
+    <ol>
+      <li>On the verification screen pick <span class="ui">HTML file</span> (usually the recommended method).</li>
+      <li>Click the download button. You get a file named like <code>google1a2b3c4d5e6f7g8h.html</code>.</li>
+      <li><b>Do not rename or edit it.</b> Leave this browser tab open — you will come back to click Verify.</li>
+    </ol>
+  </div></div>
+
+  <div class="step"><span class="n">3</span><div>
+    <h3>Put the file in <code>dist/</code> and push it</h3>
+    <p>Copy the downloaded file into the <code>dist</code> folder of the project (next to <code>index.html</code>), then run:</p>
+<pre><span class="c"># go to the project folder</span>
+cd ~/"Documents/My DATA/QA-site/sqa-interview-practice"
+<span class="c"># commit and publish the verification file</span>
+git add dist/google*.html
+git commit -m "Add Google Search Console verification file"
+git push</pre>
+    <div class="callout tip"><span class="ico">✓</span><div><p><b>Easier:</b> in Claude Code, say <i>"Add this Search Console verification file to dist and push it"</i> and give it the file's path.</p></div></div>
+  </div></div>
+
+  <div class="step"><span class="n">4</span><div>
+    <h3>Wait for the deploy, then open the file in your browser</h3>
+    <ol>
+      <li>Open <a href="https://github.com/TayabGhafor/qadence/actions">the Actions page</a> and wait for the newest <b>Deploy to GitHub Pages</b> run to show a green check (about a minute).</li>
+      <li>In a private/incognito window open <code>https://tayabghafor.github.io/qadence/</code> + your file name, e.g. <code>…/qadence/google1a2b3c4d5e6f7g8h.html</code>.</li>
+      <li>Make sure this address is exactly the one the Search Console screen asks for.</li>
+    </ol>
+    <p class="expect">You should see one line: <b>google-site-verification: google1a2b3c4d5e6f7g8h.html</b></p>
+  </div></div>
+
+  <div class="step"><span class="n">5</span><div>
+    <h3>Click Verify</h3>
+    <p>Go back to the Search Console tab and click <span class="ui">Verify</span>. <span class="expect">Expected: <b>Ownership verified</b> → <span class="ui">Go to property</span>.</span></p>
+    <div class="callout warn"><span class="ico">!</span><div><p><b>Never delete this file from <code>dist/</code>.</b> Google re-checks it from time to time; if it disappears you lose access to the property after a grace period.</p></div></div>
+  </div></div>
+
+  <div class="step"><span class="n">6</span><div>
+    <h3>Submit the sitemap</h3>
+    <ol>
+      <li>In the left menu open <span class="ui">Indexing</span> → <span class="ui">Sitemaps</span>.</li>
+      <li>In <span class="ui">Add a new sitemap</span> the box already shows <code>https://tayabghafor.github.io/qadence/</code> — type <code>sitemap.xml</code> after it and click <span class="ui">Submit</span>.</li>
+    </ol>
+    <p class="expect">Status should become <b>Success</b>. "Couldn't fetch" or "Pending" right after submitting is common for new sites — check again in a few hours.</p>
+  </div></div>
+
+  <div class="step"><span class="n">7</span><div>
+    <h3>Ask Google to index the homepage</h3>
+    <ol>
+      <li>Paste <code>https://tayabghafor.github.io/qadence/</code> into the search bar at the top (<span class="ui">Inspect any URL</span>) and press Enter.</li>
+      <li>"URL is not on Google" is normal for a new site. Click <span class="ui">Request indexing</span> and wait for "Indexing requested".</li>
+    </ol>
+  </div></div>
+
+  <div class="step"><span class="n">8</span><div>
+    <h3>Check back in a week</h3>
+    <ul>
+      <li><span class="ui">Indexing → Pages</span> shows when the homepage is indexed; <span class="ui">Performance</span> shows search queries and clicks after that.</li>
+      <li><b>Only one page will be indexed — that's expected.</b> The app screens use <code>#/…</code> addresses, which Google treats as the same page. The landing page, its FAQ and structured data carry the SEO.</li>
+    </ul>
+  </div></div>
+
+  <div class="callout note"><span class="ico">+</span><div>
+    <p><b>Bonus (5 minutes): Bing Webmaster Tools.</b> Bing's index also feeds Microsoft Copilot and other AI search tools. Open <a href="https://www.bing.com/webmasters">bing.com/webmasters</a>, sign in, choose <span class="ui">Import from Google Search Console</span>, pick the Qadence property and import — the verification and sitemap come with it.</p>
+  </div></div>
+
+  <div class="check">
+    <h4>Part 1 checklist</h4>
+    <ul>
+      <li>URL-prefix property added with the trailing slash</li>
+      <li>Verification file pushed to <code>dist/</code> and opens in the browser</li>
+      <li>"Ownership verified" shown</li>
+      <li>Sitemap submitted, status Success</li>
+      <li>Homepage indexing requested</li>
+      <li>(Optional) Imported into Bing Webmaster Tools</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ───────────── Part 2 ───────────── -->
+<section class="part part2">
+  <div class="part-head part2-head">
+    <span class="big">2</span>
+    <div><h2>Custom domain <span class="pill">optional</span></h2><p><span class="pill">~30 minutes</span><span class="pill">domain fee yearly</span> DNS changes can take up to 24 hours.</p></div>
+  </div>
+  <p class="small" style="margin-bottom:4px">In the examples, replace <code>example.com</code> / <code>www.example.com</code> with your real domain.</p>
+
+  <div class="step"><span class="n">1</span><div>
+    <h3>Choose and buy a domain</h3>
+    <ul>
+      <li>Buy it from any registrar (for example Cloudflare Registrar, Namecheap or Porkbun) — GitHub doesn't sell domains.</li>
+      <li>Decide the address visitors will use: <b>www + the bare domain</b> (<code>www.example.com</code> and <code>example.com</code>) or a <b>subdomain</b> of a domain you already own (<code>learn.example.com</code>). Both work; www/subdomain is the simplest.</li>
+    </ul>
+  </div></div>
+
+  <div class="step"><span class="n">2</span><div>
+    <h3>Verify the domain with GitHub first (protects it from takeover)</h3>
+    <ol>
+      <li>On GitHub click your profile picture → <span class="ui">Settings</span> (your <b>account</b> settings, not the repository).</li>
+      <li>In the sidebar under <span class="ui">Code, planning, and automation</span> click <span class="ui">Pages</span> → <span class="ui">Add a domain</span>.</li>
+      <li>Enter the bare domain (<code>example.com</code>) → <span class="ui">Add domain</span>. GitHub shows a TXT record.</li>
+      <li>At your registrar's DNS settings add it — type <b>TXT</b>, host <code>_github-pages-challenge-TayabGhafor</code> (most registrars add <code>.example.com</code> for you), value copied from GitHub.</li>
+      <li>Wait a few minutes, then click <span class="ui">Verify</span>. If you left the page: Pages settings → <span class="ui">…</span> next to the domain → <span class="ui">Continue verifying</span>.</li>
+    </ol>
+    <p class="expect">Keep this TXT record forever — it keeps the domain verified.</p>
+  </div></div>
+
+  <div class="step"><span class="n">3</span><div>
+    <h3>Add the domain to the repository</h3>
+    <ol>
+      <li>Open <a href="https://github.com/TayabGhafor/qadence/settings/pages">github.com/TayabGhafor/qadence → Settings → Pages</a>.</li>
+      <li>Under <span class="ui">Custom domain</span> enter the address visitors will use (e.g. <code>www.example.com</code>) → <span class="ui">Save</span>.</li>
+    </ol>
+    <div class="callout note"><span class="ico">i</span><div><p>No <code>CNAME</code> file is needed in the project: Qadence deploys with GitHub Actions, and GitHub ignores that file for Actions deployments.</p></div></div>
+  </div></div>
+
+  <div class="step"><span class="n">4</span><div>
+    <h3>Create the DNS records at your registrar</h3>
+    <p><b>For www or a subdomain</b> — one CNAME record (note: no <code>/qadence</code>):</p>
+    <table class="dns">
+      <tr><th>Type</th><th>Host / name</th><th>Value / target</th></tr>
+      <tr><td>CNAME</td><td class="mono">www <span class="small">(or learn)</span></td><td class="mono">tayabghafor.github.io</td></tr>
+    </table>
+    <p><b>For the bare domain</b> (<code>example.com</code>) — four A and four AAAA records, host <code>@</code>:</p>
+    <table class="dns">
+      <tr><th>Type</th><th>Host</th><th>Values (one record each)</th></tr>
+      <tr><td>A</td><td class="mono">@</td><td class="mono">185.199.108.153 · 185.199.109.153 · 185.199.110.153 · 185.199.111.153</td></tr>
+      <tr><td>AAAA</td><td class="mono">@</td><td class="mono">2606:50c0:8000::153 · 2606:50c0:8001::153 · 2606:50c0:8002::153 · 2606:50c0:8003::153</td></tr>
+    </table>
+    <ul>
+      <li>Delete the registrar's default "parking" records for <code>@</code> and <code>www</code> so they don't conflict.</li>
+      <li>Set up both the bare domain and <code>www</code> if you can — GitHub then redirects one to the other automatically.</li>
+      <li>Don't create wildcard records (<code>*.example.com</code>) — they let others claim your subdomains.</li>
+    </ul>
+  </div></div>
+
+  <div class="step"><span class="n">5</span><div>
+    <h3>Wait for the DNS check, then turn on HTTPS</h3>
+    <ol>
+      <li>Back in <span class="ui">Settings → Pages</span>, wait until it says <b>DNS check successful</b> (minutes, up to 24 hours).</li>
+      <li>Tick <span class="ui">Enforce HTTPS</span>. If it's greyed out, the certificate isn't ready yet — it can take up to 24 hours.</li>
+    </ol>
+<pre><span class="c"># optional check from a terminal — should show tayabghafor.github.io and/or 185.199.x.153</span>
+dig www.example.com +short</pre>
+  </div></div>
+
+  <div class="step"><span class="n">6</span><div>
+    <h3>Point the project's SEO at the new address</h3>
+    <p>The canonical URL, social cards, structured data, sitemap, robots.txt, llms.txt and 404 page all come from one setting. Change it and regenerate:</p>
+    <ol>
+      <li>In <code>tools/build-seo.js</code> (line 24) set <code>const SITE_URL = 'https://www.example.com/';</code> — keep the trailing slash.</li>
+      <li>Change the "Live site" line in <code>README.md</code> and <code>dist/README.md</code>.</li>
+    </ol>
+<pre>cd ~/"Documents/My DATA/QA-site/sqa-interview-practice"
+node tools/build-seo.js                 <span class="c"># rewrites the generated SEO files</span>
+git add -A
+git commit -m "Move Qadence to www.example.com"
+git push
+gh repo edit TayabGhafor/qadence --homepage https://www.example.com/</pre>
+    <div class="callout tip"><span class="ico">✓</span><div><p><b>Easier:</b> tell Claude Code <i>"Switch Qadence to https://www.example.com/"</i>. The deploy check fails on purpose if this step is skipped, so the site can't go out with the old address in its tags.</p></div></div>
+  </div></div>
+
+  <div class="step"><span class="n">7</span><div>
+    <h3>Test the new address</h3>
+    <ul>
+      <li>Open <code>https://www.example.com/</code>, then <code>/robots.txt</code>, <code>/sitemap.xml</code> and <code>/llms.txt</code> — all should load.</li>
+      <li>A made-up path (e.g. <code>/abc</code>) shows the Qadence 404 page with a working "Go to Qadence" button.</li>
+      <li>The old <code>https://tayabghafor.github.io/qadence/</code> now redirects to the new domain.</li>
+    </ul>
+  </div></div>
+
+  <div class="step"><span class="n">8</span><div>
+    <h3>Tell Google (and Bing) about the new domain</h3>
+    <ol>
+      <li>Search Console → <span class="ui">Add property</span> → left-hand box <span class="ui">Domain</span> → <code>example.com</code> → copy the TXT record → add it at your registrar → <span class="ui">Verify</span>. This covers http, https, www and every subdomain.</li>
+      <li><span class="ui">Indexing → Sitemaps</span> → submit <code>https://www.example.com/sitemap.xml</code>.</li>
+      <li><span class="ui">URL inspection</span> → new homepage → <span class="ui">Request indexing</span>.</li>
+      <li>Keep the old github.io property and its verification file; it will simply show the redirect. If you use Bing Webmaster Tools, add the new site there too.</li>
+    </ol>
+  </div></div>
+
+  <div class="check">
+    <h4>Part 2 checklist</h4>
+    <ul>
+      <li>Domain bought</li>
+      <li>Domain verified in GitHub account settings (TXT kept)</li>
+      <li>Custom domain saved in repo Settings → Pages</li>
+      <li>CNAME / A / AAAA records created, parking records removed</li>
+      <li>DNS check successful, Enforce HTTPS ticked</li>
+      <li>SITE_URL changed, build-seo run, pushed</li>
+      <li>New address, robots.txt, sitemap, llms.txt load</li>
+      <li>Domain property verified, sitemap submitted</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ───────────── Troubleshooting ───────────── -->
+<section class="part">
+  <h2 class="sec">Troubleshooting</h2>
+  <table class="trouble">
+    <tr><th>What you see</th><th>What to do</th></tr>
+    <tr><td>Search Console says the verification file wasn't found</td><td>Check the deploy finished (green check on the Actions page), the file is in <code>dist/</code> (not the project root), the name is unchanged, and it opens in a private window at the exact address the wizard shows. Then click Verify again.</td></tr>
+    <tr><td><code>git push</code> is rejected or asks for a login</td><td>Run <code>gh auth status</code> — the active account must be <b>TayabGhafor</b>. Switch with <code>gh auth switch --user TayabGhafor</code>, then push again.</td></tr>
+    <tr><td>The deploy run is red</td><td>Open the run on the Actions page. "Run 'node tools/build-seo.js' and commit the result" means the generated SEO files are out of date — run that command, commit, push.</td></tr>
+    <tr><td>Sitemap status "Couldn't fetch"</td><td>Usual for brand-new properties. Confirm the sitemap URL opens in a browser, wait a few hours, then remove and resubmit it.</td></tr>
+    <tr><td>Still not on Google after a few days</td><td>Normal for new sites — indexing can take a couple of weeks. Request indexing once; repeating it doesn't speed things up. Links from your GitHub profile, LinkedIn or a blog help Google find the site sooner.</td></tr>
+    <tr><td>GitHub Pages: "DNS check unsuccessful" or "improperly configured"</td><td>DNS can take up to 24 hours. Check with <code>dig</code>; remove conflicting parking records; make sure the CNAME points to <code>tayabghafor.github.io</code> with no path.</td></tr>
+    <tr><td>"Enforce HTTPS" stays greyed out</td><td>Wait up to 24 hours after the DNS check passes. If your DNS has CAA records, one must allow <code>letsencrypt.org</code>.</td></tr>
+    <tr><td>The site shows a 404 on the new domain</td><td>Re-enter the domain in repo Settings → Pages and save, then re-run the latest deploy from the Actions page (<span class="ui">Re-run all jobs</span>).</td></tr>
+  </table>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Quick reference</h3>
+    <table class="facts">
+      <tr><th>Search Console</th><td><a href="https://search.google.com/search-console">search.google.com/search-console</a></td></tr>
+      <tr><th>Bing Webmaster</th><td><a href="https://www.bing.com/webmasters">bing.com/webmasters</a></td></tr>
+      <tr><th>Repo Pages settings</th><td><a href="https://github.com/TayabGhafor/qadence/settings/pages">github.com/TayabGhafor/qadence/settings/pages</a></td></tr>
+      <tr><th>Account Pages (verify domain)</th><td><a href="https://github.com/settings/pages">github.com/settings/pages</a></td></tr>
+      <tr><th>GitHub's custom-domain docs</th><td><a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site">docs.github.com → Pages → Configuring a custom domain</a></td></tr>
+      <tr><th>Regenerate SEO files</th><td><code>node tools/build-seo.js</code> (check only: <code>--check</code>)</td></tr>
+    </table>
+  </div>
+</section>
+
+</body>
+</html>
