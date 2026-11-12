@@ -128,6 +128,10 @@ code { font-size: .88em; padding: .12em .4em; border-radius: 6px; background: va
 kbd { font-size: .8em; padding: .1em .45em; border-radius: 6px; border: 1px solid var(--line-2); border-block-end-width: 2px; background: var(--surface); }
 ::selection { background: rgba(20,184,166,.28); }
 :focus-visible { outline: 2px solid var(--brand-2); outline-offset: 2px; }
+/* Scrollable panels keep scrolling (wheel, touch, keyboard) but never show a scrollbar track.
+   The page itself (html/body) keeps its normal scrollbar. */
+body *, dialog * { scrollbar-width: none; }
+body *::-webkit-scrollbar, dialog *::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .input:focus-visible, .select:focus-visible, .textarea:focus-visible { outline: none; }
 [hidden] { display: none !important; }
 .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -227,8 +231,7 @@ kbd { font-size: .8em; padding: .1em .45em; border-radius: 6px; border: 1px soli
 .seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 10px; font-size: 13px; font-weight: 650; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; min-height: 34px; transition: all var(--d2) var(--ease); }
 .seg button:hover { color: var(--text); }
 .seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
-.tabs { display: flex; gap: 4px; border-block-end: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
-.tabs::-webkit-scrollbar { display: none; }
+.tabs { display: flex; gap: 4px; border-block-end: 1px solid var(--line); overflow-x: auto; }
 .tabs [role="tab"] { border: 0; background: none; padding: 12px 14px; font-weight: 650; font-size: 14px; color: var(--muted); border-block-end: 2px solid transparent; margin-block-end: -1px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .tabs [role="tab"][aria-selected="true"] { color: var(--text); border-block-end-color: var(--brand-2); }
 .tabs [role="tab"]:hover { color: var(--text); }
@@ -492,7 +495,7 @@ html[data-boot] #marketing { visibility: hidden; }
 
 /* ───────────── app shell ───────────── */
 .shell { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); min-height: 100dvh; }
-.sidebar { position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column; gap: 6px; padding: 18px 14px 14px; background: var(--surface); border-inline-end: 1px solid var(--line); overflow-y: auto; scrollbar-width: thin; z-index: var(--z-drawer); }
+.sidebar { position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column; gap: 6px; padding: 18px 14px 14px; background: var(--surface); border-inline-end: 1px solid var(--line); overflow-y: auto; z-index: var(--z-drawer); }
 .sidebar-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 16px; }
 .nav-group { display: grid; gap: 2px; margin-block-end: 10px; }
 .nav-label { font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; color: color-mix(in srgb, var(--muted) 85%, transparent); padding: 10px 12px 6px; }

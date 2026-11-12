@@ -182,7 +182,7 @@
 .task-list > b { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-block-end: 4px; color: var(--brand-ink); }
 .task-list .check-row { font-size: 13.5px; min-height: 30px; align-items: center; }
 .task-list .check-row input { margin: 0; }
-.editor-tabs { display: flex; gap: 4px; padding: 8px 10px 0; border-block-end: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.editor-tabs { display: flex; gap: 4px; padding: 8px 10px 0; border-block-end: 1px solid var(--line); overflow-x: auto; }
 .editor-tab { display: inline-flex; align-items: center; gap: 7px; padding: 10px 14px; border: 0; border-block-end: 2px solid transparent; margin-block-end: -1px; background: none; color: var(--muted); font-weight: 650; font-size: 13.5px; white-space: nowrap; }
 .editor-tab:hover { color: var(--text); }
 .editor-tab.active { color: var(--text); border-block-end-color: var(--brand-2); }
