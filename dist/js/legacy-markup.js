@@ -8,6 +8,15 @@
   const head = (eyebrowIcon, eyebrow, title, sub, side, ids) => `<div class="page-head legacy-head"><div><span class="eyebrow">${I(eyebrowIcon, 'ic-sm')}${eyebrow}</span><h1${ids && ids.h ? ` id="${ids.h}"` : ''}>${title}</h1><p${ids && ids.p ? ` id="${ids.p}"` : ''}>${sub}</p></div>${side ? `<div class="actions">${side}</div>` : ''}</div>`;
   const field = (id, label, control) => `<div class="field"><label for="${id}">${label}</label>${control}</div>`;
 
+  const labTabs = [
+    ['login', 'login', 'Login form', 'Input validation', 'brand'],
+    ['api', 'plug', 'API console', 'Status codes & payloads', 'info'],
+    ['checkout', 'cart', 'Checkout flow', 'End-to-end journeys', 'gold'],
+    ['mobile', 'phone', 'Mobile lab', 'Permissions & offline', 'violet'],
+    ['ui', 'cursor', 'UI playground', 'Forms & interactions', 'accent'],
+    ['bughunt', 'bug', 'Bug hunt', 'Reproduce & report', 'danger']
+  ];
+
   const M = {
     learning: `${head('route', 'Career roadmap', 'Your 24-week SQA career roadmap', 'Eight self-paced stages from QA foundations to job applications, based on a two-part SQA career roadmap. Each stage guide links to labs, challenges and interview practice.', `<span class="badge badge-brand">${I('flag')}8 stages · self-paced</span>`)}
 <div id="learningOverview"></div><div id="lessonDetail" hidden></div>`,
@@ -141,7 +150,10 @@
 </div>`,
 
 
-    submissions: `${head('inbox', 'Your work', 'My submissions', 'Your code, approach and rubric notes — stored only in this browser. Code you run executes in an isolated sandbox in your browser; scores come from a transparent rubric.', `<button class="btn btn-secondary btn-sm" type="button" id="exportSubmissions">${I('download')}Export submissions</button>`)}
+    submissions: `<header class="practice-banner submissions-banner">
+  <div class="practice-banner-copy"><span class="tile tile-lg">${I('inbox')}</span><div><h1>My submissions</h1><p>Review saved challenge attempts, rubric scores, and submitted code.</p></div></div>
+  <div class="practice-banner-actions"><button class="btn btn-glass btn-sm" type="button" id="exportSubmissions">${I('download')}Export submissions</button></div>
+</header>
 <div id="submissionList" class="submission-list"></div>`,
 
     practice: `<div id="interviewHub"></div>
@@ -158,16 +170,14 @@
   </div>
 </div>`,
 
-    lab: `${head('flask', 'Practice labs', 'Testing playground', 'Six simulated apps to test safely in your browser.', `<span class="badge badge-brand">${I('shield')}Safe sandbox · no data sent</span>`)}
-<div class="lab-tabs" role="tablist" aria-label="Testing playgrounds">
-  <button class="lab-tab active" type="button" role="tab" aria-selected="true" aria-controls="lab-login" data-lab="login">${I('login')}<span><small>01</small>Login form</span></button>
-  <button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-api" data-lab="api">${I('plug')}<span><small>02</small>API console</span></button>
-  <button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-checkout" data-lab="checkout">${I('cart')}<span><small>03</small>Checkout flow</span></button>
-  <button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-mobile" data-lab="mobile">${I('phone')}<span><small>04</small>Mobile lab</span></button>
-  <button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-ui" data-lab="ui">${I('cursor')}<span><small>05</small>UI playground</span></button>
-  <button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-bughunt" data-lab="bughunt">${I('bug')}<span><small>06</small>Bug hunt</span></button>
+    lab: `<header class="practice-banner lab-banner">
+  <div class="practice-banner-copy"><span class="tile tile-lg">${I('flask')}</span><div><h1>Practice labs</h1><p>Choose a simulated app and test how it responds to real QA scenarios.</p></div></div>
+  <div class="practice-banner-actions"><span class="lab-privacy">${I('shield', 'ic-sm')}Runs in your browser</span></div>
+</header>
+<div class="lab-tabs" role="tablist" aria-label="Practice labs">
+  ${labTabs.map(([id, ic, title, sub, tone], i) => `<button class="lab-tab${i === 0 ? ' active' : ''}" type="button" role="tab" id="lab-tab-${id}" aria-selected="${i === 0}" aria-controls="lab-${id}" data-lab="${id}"><span class="tile" data-tone="${tone}">${I(ic)}</span><span class="lab-tab-copy"><b>${title}</b><small>${sub}</small></span><span class="lab-tab-indicator">${I('chevron-right', 'ic-sm flip-rtl')}${I('check', 'ic-sm')}</span></button>`).join('')}
 </div>
-<div class="lab-panel active" id="lab-login" role="tabpanel"><div class="lab-grid">
+<div class="lab-panel active" id="lab-login" role="tabpanel" aria-labelledby="lab-tab-login" tabindex="0"><div class="lab-grid">
   <div class="demo-card"><div class="demo-title"><span class="tile tile-sm">${I('login')}</span><div><h3>Sign-in validation lab</h3><p class="sub">Exercise required fields, format checks, authentication, and feedback.</p></div></div>
     <div class="demo-form">${field('loginEmail', 'Email address', '<input class="input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="off">')}${field('loginPassword', 'Password', '<input class="input" id="loginPassword" type="password" placeholder="Enter a password" autocomplete="off">')}<button class="btn btn-primary" type="button" id="loginSubmit">${I('login')}Sign in</button></div>
     <p class="picks-label">Quick scenarios</p><div class="scenario-picks"><button class="chip" type="button" data-login-case="empty">Empty fields</button><button class="chip" type="button" data-login-case="format">Invalid email</button><button class="chip" type="button" data-login-case="wrong">Wrong password</button><button class="chip" type="button" data-login-case="valid">Valid login</button></div></div>
@@ -175,21 +185,21 @@
     <div class="result-box" id="loginResult" aria-live="polite"><h4>Ready for your first check</h4><p>Use a scenario chip or enter values yourself. Demo credentials: demo.qa@example.com / Test123!</p></div>
     <div class="event-list" id="loginEvents"><div class="event"><b>Test idea</b><span>Check required, malformed, incorrect, and valid inputs.</span></div></div></div>
 </div></div>
-<div class="lab-panel" id="lab-api" role="tabpanel"><div class="lab-grid">
+<div class="lab-panel" id="lab-api" role="tabpanel" aria-labelledby="lab-tab-api" tabindex="0"><div class="lab-grid">
   <div class="demo-card"><div class="demo-title"><span class="tile tile-sm" data-tone="gold">${I('plug')}</span><div><h3>API request console</h3><p class="sub">Choose an endpoint and response condition. Think about status, schema, and side effects.</p></div></div>
     <div class="demo-form">${field('apiEndpoint', 'Endpoint', '<select class="select mono" id="apiEndpoint"><option value="orders">GET /api/orders</option><option value="user">GET /api/users/42</option><option value="create">POST /api/orders</option></select>')}${field('apiScenario', 'Simulate response', '<select class="select" id="apiScenario"><option value="200">200 · Success</option><option value="401">401 · Unauthenticated</option><option value="404">404 · Not found</option><option value="500">500 · Server error</option></select>')}<button class="btn btn-primary" type="button" id="sendApi">${I('send')}Send request</button></div></div>
   <div class="demo-card"><div class="demo-title spread"><div class="row"><span class="tile tile-sm" data-tone="info">${I('terminal')}</span><div><h3>Response preview</h3><p class="sub">A simulated response for your test design.</p></div></div><span class="status-code" id="apiStatus">READY</span></div>
     <div class="result-box" id="apiResult" aria-live="polite"><h4>Waiting for request</h4><p>Try success and failure cases. What assertions would you add?</p><pre id="apiJson">// Response appears here</pre></div>
     <div class="event-list"><div class="event"><b>Check</b><span>HTTP status · content type · response schema · error handling</span></div></div></div>
 </div></div>
-<div class="lab-panel" id="lab-checkout" role="tabpanel"><div class="lab-grid">
+<div class="lab-panel" id="lab-checkout" role="tabpanel" aria-labelledby="lab-tab-checkout" tabindex="0"><div class="lab-grid">
   <div class="demo-card"><div class="demo-title"><span class="tile tile-sm" data-tone="accent">${I('cart')}</span><div><h3>Mini checkout</h3><p class="sub">Explore field validation, coupon rules, and payment outcomes.</p></div></div>
     <div class="demo-form">${field('shipName', 'Full name', '<input class="input" id="shipName" placeholder="Alex Morgan" autocomplete="off">')}${field('shipAddress', 'Delivery address', '<input class="input" id="shipAddress" placeholder="Street and city" autocomplete="off">')}${field('couponCode', 'Coupon code', '<input class="input" id="couponCode" placeholder="Try SAVE10" autocomplete="off">')}${field('paymentOutcome', 'Payment simulation', '<select class="select" id="paymentOutcome"><option value="success">Payment succeeds</option><option value="decline">Card declined</option><option value="timeout">Payment times out</option></select>')}<button class="btn btn-primary" type="button" id="checkoutSubmit">${I('cart')}Place demo order · $48.00</button></div></div>
   <div class="demo-card"><div class="demo-title"><span class="tile tile-sm" data-tone="success">${I('clipboard')}</span><div><h3>Order status</h3><p class="sub">Watch for duplicate orders, clear errors, and consistent totals.</p></div></div>
     <div class="result-box" id="checkoutResult" aria-live="polite"><h4>Cart ready</h4><p>1 × Everyday Backpack<br>Subtotal $48.00 · Shipping calculated at checkout</p></div>
     <div class="event-list"><div class="event"><b>Explore</b><span>Empty address · valid/invalid coupon · decline · timeout · retry</span></div></div></div>
 </div></div>
-<div class="lab-panel" id="lab-mobile" role="tabpanel"><div class="lab-grid">
+<div class="lab-panel" id="lab-mobile" role="tabpanel" aria-labelledby="lab-tab-mobile" tabindex="0"><div class="lab-grid">
   <div class="demo-card"><div class="demo-title"><span class="tile tile-sm" data-tone="violet">${I('phone')}</span><div><h3>Mobile interruption simulator</h3><p class="sub">Toggle app conditions and see what a QA engineer should verify on resume.</p></div></div>
     <div class="mobile-phone"><div class="phone-notch" aria-hidden="true"></div><div class="phone-top"><span>9:41</span><span id="phoneNetworkLabel">${I('wifi', 'ic-xs')} Wi-Fi · 82%</span></div>
       <div class="phone-screen"><h4>Profile photo upload</h4><p id="mobileState">Upload in progress · 64%</p><div class="upload-track"><i id="uploadProgress" style="width:64%"></i></div>
@@ -201,7 +211,7 @@
     <div class="result-box" id="mobileResult" aria-live="polite"><h4>Baseline state</h4><p>Photo upload is active. Interrupt the network, background the app, or revoke permission.</p></div>
     <div class="event-list"><div class="event"><b>Checklist</b><span>Progress preserved · retry/resume · no duplicate upload · clear permission state</span></div><div class="event"><b>Device scope</b><span>Repeat critical lifecycle checks on a real iOS and Android device.</span></div></div></div>
 </div></div>
-<div class="lab-panel" id="lab-ui" role="tabpanel"><div class="lab-grid">
+<div class="lab-panel" id="lab-ui" role="tabpanel" aria-labelledby="lab-tab-ui" tabindex="0"><div class="lab-grid">
   <div class="demo-card"><div class="demo-title"><span class="tile tile-sm">${I('cursor')}</span><div><h3>UI Components Playground</h3><p class="sub">Exercise fields, dropdowns, dynamic tables, and user-visible feedback.</p></div></div>
     <div class="demo-form">${field('playgroundEmail', 'Work email', '<input class="input" id="playgroundEmail" type="email" placeholder="name@example.com" autocomplete="off">')}${field('playgroundRole', 'Requested role', '<select class="select" id="playgroundRole"><option value="">Choose a role</option><option>QA Analyst</option><option>SQA Engineer</option><option>Admin</option></select>')}${field('playgroundSearch', 'Filter employee table', '<input class="input" id="playgroundSearch" placeholder="Try typing Alex" autocomplete="off">')}
       <div class="event-list" id="employeeRows"><div class="event"><b>EMP-104</b><span>Alex Carter · Quality Engineering · Active</span></div><div class="event"><b>EMP-217</b><span>Sam Rivera · Product · On leave</span></div><div class="event"><b>EMP-305</b><span>Jordan Lee · Quality Engineering · Active</span></div></div>
@@ -212,7 +222,7 @@
     <div class="scenario-picks"><button class="chip" type="button" id="playgroundAlert">${I('bell', 'ic-sm')}Trigger confirmation dialog</button><button class="chip" type="button" id="playgroundReset">${I('rotate', 'ic-sm')}Reset sample data</button></div>
     <div id="playgroundNotice" class="result-box" aria-live="polite"><h4>Interaction state</h4><p>Use the controls and observe what changes.</p></div></div>
 </div></div>
-<div class="lab-panel" id="lab-bughunt" role="tabpanel"><div class="lab-grid">
+<div class="lab-panel" id="lab-bughunt" role="tabpanel" aria-labelledby="lab-tab-bughunt" tabindex="0"><div class="lab-grid">
   <div class="demo-card"><span class="eyebrow seeded">${I('bug', 'ic-sm')}Seeded defect · checkout</span><div class="demo-title"><span class="tile tile-sm" data-tone="danger">${I('bug')}</span><div><h3>ShopFlow Store · Discount calculation</h3><p class="sub">A bug is intentionally present in this practice app. Reproduce it before submitting your report.</p></div></div>
     <div class="bug-cart"><div class="bug-product"><span>Canvas backpack</span><b>$30.00</b></div><div class="bug-product"><span>Insulated bottle</span><b>$18.00</b></div><div class="bug-product"><span>Shipping</span><b>$6.00</b></div><div class="bug-product"><span>Promo code</span><b class="mono">SAVE10</b></div><div class="bug-product total"><span>Displayed discount (seeded bug)</span><b id="bugDiscount">−$5.40</b></div><div class="bug-product total"><span>Displayed total</span><b id="bugTotal">$48.60</b></div><p class="bug-clue">${I('info', 'ic-sm')}Expected rule: the 10% discount applies to merchandise only, not shipping.</p></div>
     <button class="btn btn-secondary btn-sm" type="button" id="bugRecalc">${I('rotate')}Recalculate cart</button></div>

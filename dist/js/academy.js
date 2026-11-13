@@ -86,6 +86,18 @@
     if (a.notes[l.id]) p += 8;
     return Math.min(95, Math.round(p));
   }
+  function lessonProgressRing(l, progress) {
+    return `<div class="ring lesson-meter" role="progressbar" aria-label="Lesson progress" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100">
+      ${ringSvg(progress, 136, 7)}
+      <div class="lha-core" aria-hidden="true"><span class="lesson-meter-icon">${icon(progress === 100 ? 'check' : STAGE_META[l.stage].icon)}</span><b class="tnum">${progress}%</b><small>Complete</small></div>
+    </div>`;
+  }
+  function pagerButton(lesson, next = false) {
+    return `<button class="pager-btn${next ? ' next' : ''}" type="button" data-go="academy/lesson/${lesson.id}">
+      <span class="pager-copy"><small>${esc(t(next ? 'acad.nextLesson' : 'acad.prevLesson'))} · Step ${lesson.seq}</small><b>${esc(lesson.title)}</b></span>
+      <span class="pager-arrow">${icon(next ? 'arrow-right' : 'arrow-left', 'flip-rtl')}</span>
+    </button>`;
+  }
   function lessonCard(l) {
     const s = status(l);
     return `<button type="button" class="lesson-card ${s === 'done' ? 'done' : ''}" data-go="academy/lesson/${l.id}" style="${stageStyle(l.stage)}">
@@ -303,13 +315,13 @@
           <div class="lesson-chips">${g ? `<button type="button" class="chip chip-sm" data-go="academy/topic/${g.id}">${icon(g.icon, 'ic-sm')}${esc(g.name)}</button>` : ''}${colls.map(c => `<button type="button" class="chip chip-sm" data-go="academy/collection/${c.id}">${icon(c.icon, 'ic-sm')}${esc(c.name)}</button>`).join('')}</div>
           <div class="lesson-hero-actions"><a class="btn btn-primary btn-sm" href="#sec-learn" data-jump="learn">${icon('play')}${esc(prog > 12 && prog < 100 ? t('common.continue') : t('common.start'))}</a><a class="btn btn-secondary btn-sm" href="#sec-quiz" data-jump="quiz">${icon('clipboard')}${esc(t('acad.quiz'))}</a><button class="btn btn-ghost btn-sm" type="button" id="bookmarkBtn" aria-pressed="${bm}">${icon('bookmark')}${esc(bm ? t('acad.bookmarked') : t('acad.bookmark'))}</button></div>
         </div>
-        <div class="lesson-hero-art" aria-hidden="true"><div class="ring" style="--size:150px">${ringSvg(prog, 150, 10)}<div class="lha-core"><span class="tile tile-lg">${icon(STAGE_META[l.stage].icon)}</span><b>${prog}%</b></div></div></div>
+        <div class="lesson-hero-art" id="lessonMeter">${lessonProgressRing(l, prog)}</div>
       </div>
       <dl class="glance">
         <div><dt>${icon('book', 'ic-sm')}${esc(t('acad.sections'))}</dt><dd>${secs.length}</dd></div>
         <div><dt>${icon('route', 'ic-sm')}${esc(t('acad.visuals'))}</dt><dd>${vis.length + l.body.filter(b => ['table', 'flow', 'compare', 'cards'].includes(b.t) || (window.QA_DIAGRAMS && QA_DIAGRAMS.types.includes(b.t))).length}</dd></div>
-        <div><dt>${icon('edit', 'ic-sm')}${esc(t('acad.practice'))}</dt><dd>${pracDone}/${l.practice.length}</dd></div>
-        <div><dt>${icon('clipboard', 'ic-sm')}${esc(t('acad.quiz'))}</dt><dd>${quizRight}/${l.quiz.length}</dd></div>
+        <div><dt>${icon('edit', 'ic-sm')}${esc(t('acad.practice'))}</dt><dd id="lessonPracticeCount">${pracDone}/${l.practice.length}</dd></div>
+        <div><dt>${icon('clipboard', 'ic-sm')}${esc(t('acad.quiz'))}</dt><dd id="lessonQuizCount">${quizRight}/${l.quiz.length}</dd></div>
         <div><dt>${icon('translate', 'ic-sm')}${esc(t('acad.languages'))}</dt><dd>${1 + Object.keys(l.explain || {}).length}</dd></div>
       </dl>
     </header>
@@ -331,7 +343,7 @@
       ${linksHtml(l) ? `<h3 style="font-size:14px;margin:20px 0 10px">${esc(t('acad.relatedPractice'))}</h3><div class="practise-links">${linksHtml(l)}</div>` : ''}</section>
     <section class="lesson-sec card notes-box" id="sec-notes" aria-labelledby="h-notes"><div class="sec-head"><span class="sec-num">${num('notes')}</span><span class="tile" data-tone="accent">${icon('note')}</span><h2 id="h-notes">${esc(t('acad.notes'))}</h2></div><label class="sr-only" for="lessonNotes">${esc(t('acad.notes'))}</label><textarea class="textarea" id="lessonNotes" maxlength="20000" placeholder="${esc(t('acad.notesPh'))}">${esc(a.notes[l.id] || '')}</textarea><p class="help" id="notesStatus" role="status" aria-live="polite">${a.notes[l.id] ? 'Saved in this browser.' : 'Notes save automatically in this browser.'}</p></section>
     <div class="complete-bar" id="completeBar">${completeBarHtml(l)}</div>
-    <nav class="lesson-pager" aria-label="Lesson navigation">${prev ? `<button class="pager-btn" type="button" data-go="academy/lesson/${prev.id}"><small>${icon('arrow-left', 'ic-xs flip-rtl')}${esc(t('acad.prevLesson'))} · step ${prev.seq}</small><b>${esc(prev.title)}</b></button>` : '<span></span>'}${next ? `<button class="pager-btn next" type="button" data-go="academy/lesson/${next.id}"><small>${esc(t('acad.nextLesson'))} · step ${next.seq}${icon('arrow-right', 'ic-xs flip-rtl')}</small><b>${esc(next.title)}</b></button>` : ''}</nav>
+    <nav class="lesson-pager" aria-label="Adjacent lessons">${prev ? pagerButton(prev) : ''}${next ? pagerButton(next, true) : ''}</nav>
   </article>
   <aside class="lesson-aside" aria-label="Lesson navigation">
     <div class="card aside-card"><h3>${esc(t('acad.onThisPage'))}</h3><nav class="toc">${secs.map(([k, ic, label]) => `<a href="#sec-${k}" data-jump="${k}" data-toc="${k}"><span class="toc-n">${num(k)}</span>${esc(label)}${doneSec[k] ? icon('check-circle', 'ic-xs toc-done') : ''}</a>`).join('')}</nav></div>
@@ -358,6 +370,14 @@
       if (!a.langs.includes(code)) { a.langs.push(code); save(); }
     }));
     const first = explainCode(l); if (!a.langs.includes(first)) { a.langs.push(first); persistSoon(); }
+    const refreshLessonProgress = () => {
+      const progress = lessonProgress(l), meter = $id('lessonMeter');
+      if (meter.firstElementChild.getAttribute('aria-valuenow') !== String(progress)) {
+        meter.innerHTML = lessonProgressRing(l, progress);
+      }
+      $id('lessonPracticeCount').textContent = `${Object.keys(a.practice[l.id] || {}).length}/${l.practice.length}`;
+      $id('lessonQuizCount').textContent = `${Object.values(a.quiz[l.id] || {}).filter(x => x.correct).length}/${l.quiz.length}`;
+    };
     // practice
     $id('practiceBox').addEventListener('click', e => {
       const h = e.target.closest('[data-hint]'), r = e.target.closest('[data-reveal]'), m = e.target.closest('[data-mark]');
@@ -366,7 +386,7 @@
       if (m) {
         const [i, v] = m.dataset.mark.split(':');
         (a.practice[l.id] || (a.practice[l.id] = {}))[i] = v;
-        markActive(); save();
+        markActive(); save(); refreshLessonProgress();
         const open = [...root.querySelectorAll('.ex-answer')].map(x => !x.hidden);
         $id('practiceBox').innerHTML = practiceHtml(l);
         root.querySelectorAll('.ex-answer').forEach((x, k) => { if (open[k]) { x.hidden = false; const rb = root.querySelector(`[data-reveal="${k}"]`); if (rb) { rb.setAttribute('aria-expanded', 'true'); rb.innerHTML = `${icon('eye-off')}${esc(t('common.hide'))}`; } } });
@@ -377,9 +397,9 @@
     const quizBox = $id('quizBox');
     quizBox.addEventListener('click', e => {
       const b = e.target.closest('[data-check]');
-      if (b) { checkQuestion(l, Number(b.dataset.check)); return; }
+      if (b) { checkQuestion(l, Number(b.dataset.check)); refreshLessonProgress(); return; }
       if (e.target.closest('#quizRetake')) {
-        delete a.quiz[l.id]; save(); quizBox.innerHTML = quizHtml(l);
+        delete a.quiz[l.id]; save(); quizBox.innerHTML = quizHtml(l); refreshLessonProgress();
         quizBox.querySelector('input')?.focus();
       }
     });
@@ -393,6 +413,7 @@
     notes.addEventListener('input', () => {
       const v = notes.value.slice(0, 20000);
       if (v.trim()) a.notes[l.id] = v; else delete a.notes[l.id];
+      refreshLessonProgress();
       ns.textContent = 'Saving…';
       persistSoon(ok => { ns.textContent = ok ? `Saved in this browser · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Not saved — browser storage is blocked or full. Copy your notes somewhere safe.'; });
     });
@@ -402,12 +423,19 @@
       if (e.target.closest('#lessonComplete')) {
         a.completed[l.id] = new Date().toISOString(); markActive(); save();
         $id('completeBar').innerHTML = completeBarHtml(l);
+        refreshLessonProgress();
         const stageDone = lessonsIn(l.stage).every(x => a.completed[x.id]);
         QA.celebrate(stageDone ? `${stageName(l.stage)} complete! +50 XP` : `Lesson complete! +50 XP`);
         root.querySelector('.stage-list [aria-current="page"]')?.classList.add('done');
         $id('completeBar').querySelector('button')?.focus();
       }
-      if (e.target.closest('#lessonUncomplete')) { delete a.completed[l.id]; save(); $id('completeBar').innerHTML = completeBarHtml(l); toast('Lesson marked as not complete.', 'rotate'); }
+      if (e.target.closest('#lessonUncomplete')) {
+        delete a.completed[l.id]; save();
+        $id('completeBar').innerHTML = completeBarHtml(l);
+        refreshLessonProgress();
+        toast('Lesson marked as not complete.', 'rotate');
+        $id('completeBar').querySelector('button')?.focus();
+      }
     });
     root.querySelectorAll('[data-challenge-open]').forEach(b => b.addEventListener('click', () => beginChallenge(b.dataset.challengeOpen)));
     root.querySelectorAll('[data-interview-round]').forEach(b => b.addEventListener('click', () => startInterviewRound(b.dataset.interviewRound.split(','), l)));

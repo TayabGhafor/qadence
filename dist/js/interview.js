@@ -353,29 +353,72 @@
 
   /* ───────────── mock interview ───────────── */
   const mockCfg = { cats: [], count: 6 };
+  function mockPool() {
+    return mockCfg.cats.length ? BANK.filter(q => mockCfg.cats.includes(q.cat)) : BANK;
+  }
   function renderMockSetup() {
     const { bank } = ensureShell();
     const past = bankState().mocks.slice().reverse().slice(0, 5);
     bank.innerHTML = `
-<div class="grid g-2 mock-grid">
-  <section class="card mock-setup" aria-labelledby="mkH"><div class="card-title"><h2 id="mkH">${icon('timer')} Set up a mock interview</h2></div>
-    <p class="muted" style="font-size:14px;margin-bottom:14px">Questions come one at a time, mixed like a real interview. Answer out loud or type, reveal the model answer, then score yourself honestly.</p>
-    <div class="field"><span class="label">Topics (none selected = mixed)</span><div class="chip-row">${CATS.map(([id, ic, name]) => `<button type="button" class="chip chip-sm" data-mk="${id}" aria-pressed="${mockCfg.cats.includes(id)}">${icon(ic, 'ic-sm')}${esc(name)}</button>`).join('')}</div></div>
-    <div class="field" style="margin-top:14px"><span class="label" id="mkCountL">Number of questions</span><div class="seg" role="group" aria-labelledby="mkCountL">${[4, 6, 8, 10].map(n => `<button type="button" data-mkc="${n}" aria-pressed="${mockCfg.count === n}">${n}</button>`).join('')}</div></div>
-    <button class="btn btn-primary btn-lg" type="button" id="mkStart" style="margin-top:18px">${icon('play')}${esc(t('iv.startMock'))}</button>
+<div class="mock-grid">
+  <section class="card mock-setup" aria-labelledby="mkH">
+    <header class="mock-heading">
+      <span class="tile tile-lg">${icon('mic')}</span>
+      <div><h2 id="mkH">Set up a mock interview</h2><p>Answer one question at a time, compare with the model answer, and score yourself.</p></div>
+    </header>
+    <div class="mock-controls">
+      <fieldset class="mock-field">
+        <legend>Topics</legend>
+        <div class="mock-topics">
+          ${[['', 'shuffle', 'Mixed topics'], ...CATS].map(([id, ic, name]) => `<button type="button" class="mock-topic" data-mk="${id}" aria-pressed="${id ? mockCfg.cats.includes(id) : !mockCfg.cats.length}">${icon(ic, 'ic-sm')}<span>${esc(name)}</span>${icon('check', 'ic-sm mock-topic-check')}</button>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset class="mock-field">
+        <legend>Number of questions</legend>
+        <div class="seg mock-count">${[4, 6, 8, 10].map(n => `<button type="button" data-mkc="${n}" aria-pressed="${mockCfg.count === n}">${n}</button>`).join('')}</div>
+      </fieldset>
+    </div>
+    <footer class="mock-launch">
+      <div class="mock-preview" role="status"><b id="mkPreviewCount"></b><small id="mkPreviewTopics"></small></div>
+      <button class="btn btn-primary" type="button" id="mkStart">${icon('play')}${esc(t('iv.startMock'))}</button>
+    </footer>
   </section>
-  <section class="card" aria-labelledby="mkPastH"><div class="card-title"><h2 id="mkPastH">${icon('clock')} Recent mock interviews</h2></div>
-    ${past.length ? `<div class="stack">${past.map(m => `<div class="test-row" style="cursor:default"><span class="score-pill ${m.score >= 70 ? 'good' : m.score >= 50 ? 'mid' : 'low'}">${m.score}%</span><span class="tr-body"><b>${m.count} questions</b><small>${esc(relDate(m.date))}</small></span></div>`).join('')}</div>` : `<div class="empty"><span class="tile" data-tone="info">${icon('mic')}</span><h3>No mock interviews yet</h3><p>Your self-scores will appear here.</p></div>`}
-    <div class="callout callout-tip" style="margin-top:16px">${icon('bulb')}<div><b class="title">Interview tip</b>Structure answers: definition → example from a real project → why it matters. For “how would you test…”, clarify first, then cover risks and categories.</div></div>
-  </section>
+  <div class="mock-sidebar">
+    <section class="card mock-history" aria-labelledby="mkPastH"><div class="card-title"><h2 id="mkPastH">${icon('clock')} Recent mock interviews</h2></div>
+      ${past.length ? `<ul class="mock-history-list">${past.map(m => `<li class="mock-history-row"><span class="tr-body"><b>${m.count} questions</b><small>${esc(relDate(m.date))}</small></span><span class="score-pill ${m.score >= 70 ? 'good' : m.score >= 50 ? 'mid' : 'low'}">${m.score}%</span></li>`).join('')}</ul>` : `<div class="mock-history-empty"><span class="tile" data-tone="info">${icon('clock')}</span><div><h3>No mock interviews yet</h3><p>Completed sessions and scores will appear here.</p></div></div>`}
+    </section>
+    <aside class="callout callout-tip mock-tip">${icon('bulb')}<div><b class="title">Interview tip</b>Define the concept, give a real project example, then explain why it matters.</div></aside>
+  </div>
 </div>`;
-    bank.querySelectorAll('[data-mk]').forEach(b => b.addEventListener('click', () => { const id = b.dataset.mk; mockCfg.cats = mockCfg.cats.includes(id) ? mockCfg.cats.filter(x => x !== id) : [...mockCfg.cats, id]; b.setAttribute('aria-pressed', String(mockCfg.cats.includes(id))); }));
-    bank.querySelectorAll('[data-mkc]').forEach(b => b.addEventListener('click', () => { mockCfg.count = Number(b.dataset.mkc); bank.querySelectorAll('[data-mkc]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
+    const topicButtons = bank.querySelectorAll('[data-mk]');
+    const countButtons = bank.querySelectorAll('[data-mkc]');
+    const updatePreview = () => {
+      const available = mockPool().length;
+      const selected = mockCfg.cats.length;
+      const count = Math.min(mockCfg.count, available);
+      $id('mkPreviewCount').textContent = `${count} ${count === 1 ? 'question' : 'questions'}`;
+      $id('mkPreviewTopics').textContent = selected ? `${selected} ${selected === 1 ? 'topic' : 'topics'} selected · ${available} available` : 'Mixed across all topics';
+    };
+    topicButtons.forEach(b => b.addEventListener('click', () => {
+      const id = b.dataset.mk;
+      if (!id) mockCfg.cats = [];
+      else if (mockCfg.cats.includes(id)) mockCfg.cats = mockCfg.cats.filter(x => x !== id);
+      else mockCfg.cats.push(id);
+      topicButtons.forEach(x => x.setAttribute('aria-pressed', String(x.dataset.mk ? mockCfg.cats.includes(x.dataset.mk) : !mockCfg.cats.length)));
+      updatePreview();
+    }));
+    countButtons.forEach(b => b.addEventListener('click', () => {
+      mockCfg.count = Number(b.dataset.mkc);
+      countButtons.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      updatePreview();
+    }));
+    updatePreview();
     $id('mkStart').addEventListener('click', () => {
-      const pool = BANK.filter(q => !mockCfg.cats.length || mockCfg.cats.includes(q.cat));
+      const pool = mockPool();
       const pick = shuffle(pool.filter(q => q.freq !== 'occasional')).concat(shuffle(pool.filter(q => q.freq === 'occasional'))).slice(0, mockCfg.count);
       mock = { list: shuffle(pick), i: 0, revealed: false, scores: [], start: Date.now(), qStart: Date.now() };
       renderMock();
+      bank.querySelector('.runner-head h1')?.focus();
     });
   }
   let mockTimer = null;
@@ -398,7 +441,7 @@
     const c = CAT[q.cat] || { icon: 'help', name: q.cat };
     bank.innerHTML = `
 <div class="mock-run">
-  <div class="runner-head" style="position:static"><div><h1>Mock interview</h1><small class="muted">Question ${mock.i + 1} of ${mock.list.length}</small></div>${barHtml(mock.i / mock.list.length * 100, 'Interview progress')}<span class="timer" id="mkTimer">${icon('clock', 'ic-sm')}<span>0:00</span></span></div>
+  <div class="runner-head" style="position:static"><div><h1 tabindex="-1">Mock interview</h1><small class="muted">Question ${mock.i + 1} of ${mock.list.length}</small></div>${barHtml(mock.i / mock.list.length * 100, 'Interview progress')}<span class="timer" id="mkTimer">${icon('clock', 'ic-sm')}<span>0:00</span></span></div>
   <section class="q-card" lang="en"><div class="q-top"><span class="badge">${icon(c.icon)}${esc(c.name)}</span>${lvlBadge(q.level)}</div>
     <h2>${esc(q.q)}</h2>
     <label class="label" for="mkAns">Your answer (optional — not saved)</label><textarea class="textarea" id="mkAns" placeholder="Type key points, or answer out loud…"></textarea>

@@ -73,12 +73,25 @@
   function openPop(btn, pop) { const open = pop.hidden; closePops(); pop.hidden = !open; btn.setAttribute('aria-expanded', String(open)); if (open) pop.querySelector('button')?.focus(); }
   document.querySelectorAll('[data-lang-menu]').forEach(menu => {
     const btn = menu.querySelector('[data-lang-toggle]');
-    const pop = document.createElement('div'); pop.className = 'pop'; pop.hidden = true; pop.setAttribute('role', 'menu');
+    const pop = document.createElement('div'); pop.className = 'pop lang-pop'; pop.hidden = true;
     menu.appendChild(pop);
-    const fill = () => { pop.innerHTML = `<div class="pop-head"><span class="tile tile-sm">${icon('translate')}</span><div><b>${esc(t('prof.language'))}</b><small>English stays the primary language</small></div></div><hr>` + QA_I18N.langs.map(l => `<button class="pop-item" type="button" role="menuitemradio" aria-checked="${l.code === QA_I18N.lang}" data-set-lang="${l.code}" lang="${l.code}"><span>${esc(l.native)}</span><span class="native" lang="en">${esc(l.name)}</span></button>`).join(''); };
+    const fill = () => {
+      pop.innerHTML = `<div class="pop-head"><span class="tile">${icon('translate')}</span><div><b>${esc(t('prof.language'))}</b><small lang="en">Lessons stay in English.</small></div></div>
+        <div class="lang-options" role="menu" aria-label="${esc(t('prof.language'))}">
+          ${QA_I18N.langs.map(l => `<button class="pop-item" type="button" role="menuitemradio" aria-checked="${l.code === QA_I18N.lang}" data-set-lang="${l.code}"><span lang="${l.code}" dir="auto">${esc(l.native)}</span><span class="native" lang="en" dir="ltr">${l.name === l.native ? '' : esc(l.name)}</span><span class="lang-check">${icon('check', 'ic-sm')}</span></button>`).join('')}
+        </div>`;
+    };
     fill();
     btn.addEventListener('click', e => { e.stopPropagation(); fill(); openPop(btn, pop); });
     pop.addEventListener('click', e => { const b = e.target.closest('[data-set-lang]'); if (!b) return; QA_I18N.set(b.dataset.setLang); closePops(); btn.focus(); });
+    pop.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.stopPropagation(); closePops(); btn.focus(); return; }
+      const items = [...pop.querySelectorAll('[data-set-lang]')], index = items.indexOf(e.target);
+      const next = { ArrowDown: index + 1, ArrowUp: index - 1, Home: 0, End: items.length - 1 }[e.key];
+      if (index < 0 || next === undefined) return;
+      e.preventDefault();
+      items[(next + items.length) % items.length].focus();
+    });
   });
   document.addEventListener('qa:lang', () => {
     if (!shell.hidden) { refreshChrome(); showScreen(QA.current, { parts: QA.parts, replace: true, keepScroll: true, noFocus: true }); }
@@ -270,18 +283,28 @@ ${resume}
     const st = computeStats(), p = state.profile, prefs = Prefs.get();
     const color = profileColor(), name = profileName();
     const since = p.createdAt || (Profiles.active() && Profiles.active().createdAt);
+    const earned = st.badges.filter(b => b.earned).length;
     root.innerHTML = `
-<div class="page-head"><div><span class="eyebrow">${icon('user', 'ic-sm')}${esc(t('nav.groupYou'))}</span><h1>${esc(t('prof.title'))}</h1><p>${esc(t('prof.sub'))}</p></div></div>
-<section class="profile-hero card">
-  <span class="avatar avatar-xl" style="--av-bg:${color}">${esc(initials(name))}</span>
-  <div class="ph-main"><h2>${esc(name)}</h2><p class="muted">${esc(p.role || 'Set your target role below')}${since ? ' · ' + esc(t('prof.memberSince', { date: new Date(since).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) })) : ''}</p>
-    <div class="row row-wrap" style="margin-top:10px">${lvlBadge(p.level || 'beginner')}<span class="badge badge-gold">${icon('zap')}${st.xp} XP</span><span class="badge badge-accent">${icon('flame')}${st.streak}-day streak</span><span class="badge badge-brand">${icon('award')}${st.badges.filter(b => b.earned).length} badges</span></div>
+<div class="page-head profile-heading"><div><h1>${esc(t('prof.title'))}</h1><p>${esc(t('prof.sub'))}</p></div></div>
+<section class="profile-hero card" aria-labelledby="profileDisplayName">
+  <div class="profile-identity">
+    <span class="avatar avatar-xl" id="profileAvatarPreview" aria-hidden="true" style="--av-bg:${color}">${esc(initials(name))}</span>
+    <div class="ph-main"><h2 id="profileDisplayName">${esc(name)}</h2><p>${esc(p.role || 'QA learner')}${since ? ' · ' + esc(t('prof.memberSince', { date: new Date(since).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) })) : ''}</p>
+      ${lvlBadge(p.level || 'beginner')}
+    </div>
   </div>
-  <div class="ph-level"><div class="ring" style="--size:104px">${ringSvg(st.level.pct, 104, 9)}<div class="ring-label"><b>${st.level.n}</b><span>${esc(st.level.title)}</span></div></div></div>
+  <div class="profile-level">
+    <div class="row spread"><b>Level ${st.level.n}</b><span>${esc(st.level.title)}</span></div>
+    ${barHtml(st.level.pct, 'Progress to next level', 'bar-sm')}
+    <small>${st.level.next - st.xp} XP to level ${st.level.n + 1}</small>
+  </div>
 </section>
+<dl class="profile-stats">
+  ${[['zap', 'gold', 'Total XP', st.xp], ['flame', 'accent', 'Day streak', st.streak], ['target', 'brand', 'Weekly lessons', `${st.doneThisWeek}/${st.goal}`], ['award', 'violet', 'Badges earned', `${earned}/${st.badges.length}`]].map(([ic, tone, label, value]) => `<div class="card"><dt><span class="tile tile-sm" data-tone="${tone}">${icon(ic)}</span><span>${label}</span></dt><dd class="tnum">${value}</dd></div>`).join('')}
+</dl>
 <div class="grid profile-grid">
-  <section class="card" aria-labelledby="pfEditH">
-    <div class="card-title"><h2 id="pfEditH">${icon('edit')} Edit profile</h2></div>
+  <section class="card profile-panel" aria-labelledby="pfEditH">
+    <div class="card-title"><span class="tile tile-sm">${icon('edit')}</span><h2 id="pfEditH">Edit profile</h2></div>
     <form id="profileForm" class="form-grid">
       <div class="field"><label for="pfName">${esc(t('prof.name'))}</label><input class="input" id="pfName" maxlength="40" value="${esc(p.name || name)}" required></div>
       <div class="field"><label for="pfRole">${esc(t('prof.role'))}</label><select class="select" id="pfRole"><option value="">${esc(t('ob.choose'))}</option>${ROLES.map(r => `<option${p.role === r ? ' selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
@@ -289,29 +312,38 @@ ${resume}
       <div class="field"><label for="pfGoal">${esc(t('prof.goal'))}</label><input class="input" id="pfGoal" type="number" min="1" max="21" value="${p.goal || 4}"><span class="help">Lessons per week.</span></div>
       <div class="field"><span class="label" id="pfColL">${esc(t('prof.avatar'))}</span><div class="swatches" role="radiogroup" aria-labelledby="pfColL">${AVATAR_COLORS.map(c => `<button type="button" role="radio" class="swatch" style="--sw:${c}" data-color="${c}" aria-checked="${c === color}" aria-label="Colour ${c}"></button>`).join('')}</div></div>
       <div class="field span-2"><label for="pfBio">${esc(t('prof.bio'))}</label><textarea class="textarea" id="pfBio" maxlength="400" rows="3" placeholder="Your goals, current role, what you are learning…">${esc(p.bio || '')}</textarea></div>
-      <div class="span-2 row"><button class="btn btn-primary" type="submit">${icon('save')}${esc(t('common.save'))}</button><span class="help" id="pfStatus" role="status"></span></div>
+      <div class="span-2 row profile-save"><button class="btn btn-primary" type="submit">${icon('save')}${esc(t('common.save'))}</button><span class="help" id="pfStatus" role="status"></span></div>
     </form>
   </section>
-  <section class="card" aria-labelledby="pfPrefH">
-    <div class="card-title"><h2 id="pfPrefH">${icon('sliders')} Preferences</h2></div>
+  <div class="profile-sidebar">
+  <section class="card profile-panel" aria-labelledby="pfPrefH">
+    <div class="card-title"><span class="tile tile-sm" data-tone="info">${icon('sliders')}</span><h2 id="pfPrefH">Preferences</h2></div>
     <div class="stack">
       <div class="field"><label for="pfLang">${esc(t('prof.language'))}</label><select class="select" id="pfLang">${QA_I18N.langs.map(l => `<option value="${l.code}"${l.code === QA_I18N.lang ? ' selected' : ''}>${esc(l.native)} — ${esc(l.name)}</option>`).join('')}</select><span class="help">Lessons stay in English; menus and simple explanations switch.</span></div>
       <div class="field"><span class="label" id="pfThemeL">${esc(t('prof.theme'))}</span><div class="seg" role="group" aria-labelledby="pfThemeL">${[['light', 'sun', 'prof.themeLight'], ['dark', 'moon', 'prof.themeDark'], ['system', 'monitor', 'prof.themeSystem']].map(([v, ic, k]) => `<button type="button" data-theme-set="${v}" aria-pressed="${(prefs.theme || 'system') === v}">${icon(ic, 'ic-sm')}${esc(t(k))}</button>`).join('')}</div></div>
     </div>
-    <hr class="divider">
-    <div class="card-title"><h3>${icon('users')} ${esc(t('prof.profiles'))}</h3></div>
+  </section>
+  <section class="card profile-panel" aria-labelledby="pfProfilesH">
+    <div class="card-title"><span class="tile tile-sm" data-tone="violet">${icon('users')}</span><h2 id="pfProfilesH">${esc(t('prof.profiles'))}</h2></div>
     <div class="stack" id="profileList">${Profiles.all().map(x => `<div class="profile-row"><span class="avatar avatar-sm" style="--av-bg:${x.id === PROFILES.active ? color : x.color}">${esc(initials(x.id === PROFILES.active ? name : x.name))}</span><span class="pr-name"><b>${esc(x.id === PROFILES.active ? name : x.name)}</b><small>${x.id === 'default' ? 'Original profile' : 'Added ' + esc(new Date(x.createdAt).toLocaleDateString())}</small></span>${x.id === PROFILES.active ? `<span class="badge badge-brand">${icon('check')}${esc(t('prof.active'))}</span>` : `<button class="btn btn-secondary btn-sm" type="button" data-switch-profile="${x.id}">${esc(t('prof.switch'))}</button>${x.id !== 'default' ? `<button class="icon-btn" type="button" data-delete-profile="${x.id}" aria-label="Delete profile ${esc(x.name)}">${icon('trash')}</button>` : ''}`}</div>`).join('')}</div>
     <form class="row add-profile" id="addProfileForm"><label class="sr-only" for="newProfileName">New profile name</label><input class="input" id="newProfileName" maxlength="40" placeholder="New learner’s name" required><button class="btn btn-soft" type="submit">${icon('plus')}${esc(t('prof.addProfile'))}</button></form>
-    <p class="help" style="margin-top:8px">Separate progress per person on this browser. Not password-protected.</p>
+    <p class="help profile-local-note">Each local profile has its own progress. Anyone using this browser can switch profiles.</p>
   </section>
+  </div>
 </div>
-<section class="card" aria-labelledby="pfBadgesH" style="margin-top:18px">
-  <div class="card-title"><h2 id="pfBadgesH">${icon('award')} ${esc(t('prof.achievements'))} <span class="badge badge-gold">${st.badges.filter(b => b.earned).length}/${st.badges.length}</span></h2></div>
+<section class="card profile-panel profile-achievements" aria-labelledby="pfBadgesH">
+  <div class="card-title"><span class="tile tile-sm" data-tone="gold">${icon('award')}</span><h2 id="pfBadgesH">${esc(t('prof.achievements'))}</h2></div>
   <div class="badge-grid">${st.badges.map(badgeHtml).join('')}</div>
 </section>`;
     let level = p.level || 'beginner', col = color;
     root.querySelectorAll('[data-pf-level]').forEach(b => b.addEventListener('click', () => { level = b.dataset.pfLevel; root.querySelectorAll('[data-pf-level]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
-    root.querySelectorAll('[data-color]').forEach(b => b.addEventListener('click', () => { col = b.dataset.color; root.querySelectorAll('[data-color]').forEach(x => x.setAttribute('aria-checked', String(x === b))); }));
+    const preview = $id('profileAvatarPreview'), nameInput = $id('pfName');
+    nameInput.addEventListener('input', () => { preview.textContent = initials(nameInput.value.trim() || name); });
+    root.querySelectorAll('[data-color]').forEach(b => b.addEventListener('click', () => {
+      col = b.dataset.color;
+      preview.style.setProperty('--av-bg', col);
+      root.querySelectorAll('[data-color]').forEach(x => x.setAttribute('aria-checked', String(x === b)));
+    }));
     $id('profileForm').addEventListener('submit', e => {
       e.preventDefault();
       const nm = $id('pfName').value.trim().slice(0, 40);
@@ -320,7 +352,8 @@ ${resume}
       Profiles.rename(PROFILES.active, nm, col);
       const ok = save(); refreshChrome(); renderProfile();
       $id('pfStatus').textContent = ok ? t('prof.saved') : 'Could not save — browser storage is unavailable.';
-      toast(t('prof.saved'), 'user');
+      $id('profileForm').querySelector('[type="submit"]').focus({ preventScroll: true });
+      if (ok) toast(t('prof.saved'), 'user');
     });
     $id('pfLang').addEventListener('change', e => QA_I18N.set(e.target.value));
     root.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => { setTheme(b.dataset.themeSet === 'system' ? null : b.dataset.themeSet); root.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }));
